@@ -1,0 +1,32 @@
+BasicCollisionStrategy Receiving GameObjectCollection
+We believe the best approach to managing the list of game objects is Option 2: delegating the responsibility
+of adding or deleting objects to the GameObjectCollection class exclusively. This ensures that the
+encapsulation principle is adhered to in the best way possible.
+
+Advantages of the Design Choice (Managing the Object List Exclusively via GameObjectCollection):
+1) Separation of Concerns:
+    Managing the collection of game objects is centralized in a single class, simplifying the tracking of
+    changes and avoiding code duplication.
+
+2) Encapsulation Principle:
+    The object list is managed privately within the GameObjectCollection, hiding implementation details from
+    other classes. This makes it easier to modify the underlying data structure or logic without affecting
+    external code.
+
+3) Improved Maintainability:
+    All modifications to the list are handled in one place, reducing the risk of bugs and making the code
+    easier to maintain and extend.
+
+4) Code Reusability:
+    By encapsulating the logic within GameObjectCollection, other components of the system can reuse its
+    functionality without needing to duplicate code.
+
+Disadvantages of the Design Choice:
+
+1) Increased Complexity in GameObjectCollection:
+    Centralizing all logic may make the GameObjectCollection class more complex as it grows to accommodate
+     various use cases.
+
+2) Dependency on GameObjectCollection:
+    Other classes are tightly coupled to the GameObjectCollection's interface, meaning changes to its API
+    could impact multiple components.
