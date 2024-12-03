@@ -31,9 +31,14 @@ public class BrickerGameManager extends GameManager {
     private static final String CLASH_SOUND_PATH = "assets/blop.wav";
     private static final String WALLPAPER_PICTURE_PATH = "assets/DARK_BG2_small.jpeg";
     private static final String WINDOW_TITLE = "Bouncing Ball";
-
     private  int numOfBricksInRow;
     private int numOfRows;
+    private Ball ball;
+    private WindowController windowController;
+    private Vector2 windowDimensions;
+    private static final int DEFAUL_NUM_OF_FAILURES = 3;
+    private int numOfFailer = DEFAUL_NUM_OF_FAILURES;
+
 
     public BrickerGameManager(String windowTitle, Vector2 windowDimensions, int numOfRow, int numOfBricksInRow) {
         super(windowTitle, windowDimensions);
@@ -43,7 +48,6 @@ public class BrickerGameManager extends GameManager {
 
     public void removeBrick(GameObject brick) {
         System.out.println("collision with brick detected");
-        GameObjectCollection a = super.gameObjects();
         gameObjects().removeGameObject(brick,Layer.STATIC_OBJECTS);
     }
 
@@ -51,8 +55,9 @@ public class BrickerGameManager extends GameManager {
     @Override
     public void initializeGame(ImageReader imageReader, SoundReader soundReader,
                                UserInputListener inputListener, WindowController windowController) {
+        this.windowController = windowController;
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
-        Vector2 windowDimensions = windowController.getWindowDimensions();
+        this.windowDimensions = windowController.getWindowDimensions();
 
         // Creating wallpaper
         createWallPaper(imageReader, windowDimensions);
@@ -66,7 +71,7 @@ public class BrickerGameManager extends GameManager {
         createPaddle(paddleImage, inputListener, windowDimensions);
 
         // Creating walls
-        createWall(windowDimensions);
+        createBorder(windowDimensions);
 
         Renderable brickImage = imageReader.readImage("assets/brick.png", false);
         CollisionStrategy collisionStrategy = new BasicCollisionStrategy(this);
@@ -74,18 +79,23 @@ public class BrickerGameManager extends GameManager {
     }
 
     private void createWallOfBricks(Vector2 windowDimensions, Renderable imageReader,CollisionStrategy collisionStrategy) {
-        float brickLength = ((windowDimensions.x()) / numOfBricksInRow);
-        float brickHeight = 15; //make const from args??
+        float brickLength = (windowDimensions.x() / (numOfBricksInRow+1));
+        float gapFromUpperWall = windowDimensions.mult(0.02f).y();
+        //float gapFromLeftWall = windowDimensions.mult(0.02f).x();
+        float brickHeight = 15; //make const from args
         for (int i = 0; i < numOfRows; i++) {
             for (int j = 0; j < numOfBricksInRow; j++) {
-                Brick brick = new Brick(new Vector2(j * brickLength, i*brickHeight),
+                Brick brick = new Brick(new Vector2((j * brickLength) +(brickLength/(numOfBricksInRow))
+                        ,(i*brickHeight)+gapFromUpperWall),
                         new Vector2(brickLength, brickHeight), imageReader,collisionStrategy);
+                float x = (j * brickLength) +(brickLength/(numOfBricksInRow-1));
+                float y = (i*brickHeight)+gapFromUpperWall;
                 gameObjects().addGameObject(brick, Layer.STATIC_OBJECTS);
             }
         }
     }
 
-    private void createWall(Vector2 windowDimensions) {
+    private void createBorder(Vector2 windowDimensions) {
         Vector2 topLeftOfUpperAndLeftWall = Vector2.ZERO;
         Vector2 topLeftOfDownWall = new Vector2(0, windowDimensions.y());
         Vector2 topLeftOfRightWall = new Vector2(windowDimensions.x(), 0);
@@ -94,40 +104,46 @@ public class BrickerGameManager extends GameManager {
         Vector2 RightAndLefWallDimensions = new Vector2(windowDimensions.mult(WALL_FACTOR).x(),windowDimensions.y());
 
         GameObject wallUp = new GameObject(topLeftOfUpperAndLeftWall, UpAndDownWallDimensions, null);
-        GameObject wallDown = new GameObject(topLeftOfDownWall, UpAndDownWallDimensions,null);
         GameObject wallRight = new GameObject(topLeftOfRightWall, RightAndLefWallDimensions,null);
         GameObject wallLeft = new GameObject(topLeftOfUpperAndLeftWall, RightAndLefWallDimensions,null);
+        GameObject wallDown = new GameObject(topLeftOfDownWall, UpAndDownWallDimensions,null);
 
         Vector2[] wallHeights = {new Vector2(windowDimensions.x()/2, 0),
-                new Vector2(windowDimensions.x()/2, windowDimensions.y()),
                 new Vector2(windowDimensions.x(), windowDimensions.y()/2),
-                new Vector2(0,windowDimensions.y()/2)
+                new Vector2(0,windowDimensions.y()/2),
+                new Vector2(windowDimensions.x()/2, windowDimensions.y())
         };
-        GameObject[] walls = {wallUp, wallDown, wallRight, wallLeft};
-        for (int i = 0; i < wallHeights.length; i++) {
+        GameObject[] walls = {wallUp, wallRight, wallLeft, wallDown};
+        for (int i = 0; i < 3; i++) {
             walls[i].setCenter(wallHeights[i]);
-            gameObjects().addGameObject(walls[i]); // add
+            gameObjects().addGameObject(walls[i],Layer.STATIC_OBJECTS); // add
         }
-    }
+        walls[3].setCenter(wallHeights[3]);
+        gameObjects().addGameObject(walls[3],Layer.BACKGROUND); // add
 
-    private void createBall(Vector2 windowDimensions, ImageReader imageReader, SoundReader soundReader){
-        Renderable ballImage = imageReader.readImage(BALL_PICTURE_PATH, true);
-        Sound collisionSound = soundReader.readSound(CLASH_SOUND_PATH);
-        GameObject ball = new Ball(Vector2.ZERO, new Vector2(BALL_RADIUS, BALL_RADIUS), ballImage, collisionSound);
-        ball.setCenter(windowDimensions.mult(0.5f));
-        ball.setVelocity(Vector2.DOWN.mult(BALL_SPEED)); // Vector2(0, 100)
-        gameObjects().addGameObject(ball); // gets a private field of the father class that holds all the game objects
+    }
+    private Vector2 createRandomVelocity(){
+        Random rand = new Random();
         float ballVelX = BALL_SPEED;
         float ballVelY = BALL_SPEED;
-        Random rand = new Random();
         if(rand.nextBoolean()){
             ballVelX *= -1;
         }
         if(rand.nextBoolean()){
             ballVelY *= -1;
         }
-        ball.setVelocity(new Vector2(ballVelX,ballVelY));
-        System.out.print("hii");
+        return new Vector2(ballVelX, ballVelY);
+    }
+
+    private void createBall(Vector2 windowDimensions, ImageReader imageReader, SoundReader soundReader){
+        Renderable ballImage = imageReader.readImage(BALL_PICTURE_PATH, true);
+        Sound collisionSound = soundReader.readSound(CLASH_SOUND_PATH);
+        this.ball = new Ball(Vector2.ZERO, new Vector2(BALL_RADIUS, BALL_RADIUS), ballImage, collisionSound);
+        //GameObject ball = new Ball(Vector2.ZERO, new Vector2(BALL_RADIUS, BALL_RADIUS), ballImage, collisionSound);
+        ball.setCenter(windowDimensions.mult(0.5f));
+        ball.setVelocity(Vector2.DOWN.mult(BALL_SPEED)); // Vector2(0, 100)
+        gameObjects().addGameObject(ball); // gets a private field of the father class that holds all the game objects
+        ball.setVelocity(createRandomVelocity());
     }
 
     private void createPaddle(Renderable paddleImage, UserInputListener inputListener,
@@ -145,17 +161,50 @@ public class BrickerGameManager extends GameManager {
         gameObjects().addGameObject(wallPaper, Layer.BACKGROUND);
     }
 
+    @Override
+    public void update(float deltaTime) {
+        super.update(deltaTime);
+        checkForGameEnd();
+    }
+
+    private void checkForGameEnd() {
+        double ballHeight = ball.getCenter().y();
+        String prompt = "";
+        if(ballHeight >= windowDimensions.y() - windowDimensions.mult(WALL_FACTOR).y()){
+            numOfFailer = numOfFailer-1;
+            ball.setVelocity(createRandomVelocity());
+            ball.setCenter(windowDimensions.mult(0.5f));
+        }
+        if (numOfFailer <= 0){
+            prompt = "You Lose!";
+        }
+        //end of brick
+        if (!prompt.isEmpty()){
+            prompt += " Play again?";
+            if(windowController.openYesNoDialog(prompt)){
+                windowController.resetGame();
+                numOfFailer = DEFAUL_NUM_OF_FAILURES;
+            }
+            else{
+                windowController.closeWindow();
+            }
+
+        }
+
+    }
+
     public static void main(String[] args) {
         int numOfRows, numOfBricksInRow = 0;
         if (args.length == 2) {
+            numOfBricksInRow =  Integer.parseInt(args[0]);
             numOfRows =  Integer.parseInt(args[1]);
-            numOfBricksInRow =  Integer.parseInt(args[2]);
         } else {
             numOfRows = DEFAULT_ROWS;
             numOfBricksInRow = NUM_OF_BRICK;
         }
         BrickerGameManager window = new BrickerGameManager("Bouncing Ball",
                 new Vector2(700, 500), numOfRows, numOfBricksInRow);
+
         window.run();
     }
 }

@@ -1,4 +1,5 @@
 package bricker.brick_strategies;
+
 import bricker.gameobjects.Ball;
 
 import bricker.gameobjects.Brick;
@@ -12,8 +13,8 @@ public class BasicCollisionStrategy implements CollisionStrategy {
     public BasicCollisionStrategy(BrickerGameManager brickerGameManager) {
         this.brickerGameManager = brickerGameManager;
     }
-    private static final String MESSAGE = "collision with brick detected";
 
+    private static final String MESSAGE = "collision with brick detected";
 
 
     @Override
@@ -22,6 +23,8 @@ public class BasicCollisionStrategy implements CollisionStrategy {
 //            System.out.println(MESSAGE);
 //            objectCollection.removeGameObject(object1);
 //        }
-        brickerGameManager.removeBrick(object1);
+        if (object1.getTag().equals("Brick") && object2.getTag().equals("Ball")) {
+            brickerGameManager.removeBrick(object1);
+        }
     }
 }
