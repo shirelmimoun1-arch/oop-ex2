@@ -11,6 +11,7 @@ import danogl.collisions.Layer;
 import danogl.gui.*;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
+import bricker.gameobjects.Brick;
 
 import java.util.Random;
 
@@ -32,11 +33,11 @@ public class BrickerGameManager extends GameManager {
     private static final String WINDOW_TITLE = "Bouncing Ball";
 
     private  int numOfBricksInRow;
-    private int numOfRow;
+    private int numOfRows;
 
     public BrickerGameManager(String windowTitle, Vector2 windowDimensions, int numOfRow, int numOfBricksInRow) {
         super(windowTitle, windowDimensions);
-        this.numOfRow = numOfRow;
+        this.numOfRows = numOfRow;
         this.numOfBricksInRow = numOfBricksInRow;
     }
 
@@ -45,6 +46,7 @@ public class BrickerGameManager extends GameManager {
         GameObjectCollection a = super.gameObjects();
         gameObjects().removeGameObject(brick,Layer.STATIC_OBJECTS);
     }
+
 
     @Override
     public void initializeGame(ImageReader imageReader, SoundReader soundReader,
@@ -66,15 +68,39 @@ public class BrickerGameManager extends GameManager {
         // Creating walls
         createWall(windowDimensions);
 
-        // Creating one brick
-        Renderable brickImage = imageReader.readImage(BRICK_PICTURE_PATH, false);
+        Renderable brickImage = imageReader.readImage("assets/brick.png", false);
         CollisionStrategy collisionStrategy = new BasicCollisionStrategy(this);
-        Brick brick = new Brick(new Vector2(20,60),
-                new Vector2(windowDimensions.x() - 50,15), brickImage,collisionStrategy);
-        gameObjects().addGameObject(brick, Layer.STATIC_OBJECTS);
+        createWallOfBricks(windowDimensions, brickImage ,collisionStrategy);
+        //         Creating one brick
 
-        // Create wall of bricks
-        createWallOfBricks(windowDimensions, brickImage);
+//        Brick brick = new Brick(new Vector2(20,60),
+//                new Vector2(windowDimensions.x() - 50,15), brickImage,collisionStrategy);
+//        gameObjects().addGameObject(brick, Layer.STATIC_OBJECTS);
+    }
+
+    //    private void createWallOfBricks(ImageReader imageReader, Vector2 windowDimensions){
+//        for(int i = 0; i < numOfRow; i++) {
+//            for(int j = 0; j < numOfBricksInRow; j++) {
+//                Renderable brickImage = imageReader.readImage("assets/brick.png", false);
+////                CollisionStrategy collisionStrategy = new CollisionStrategy();
+//                Brick brick = new Brick(Vector2.ZERO, new Vector2(brickLength, 15), brickImage, null);
+//                brick.setCenter(new Vector2(, (int) windowDimensions.y() - 30));
+//                gameObjects().addGameObject(brick, Layer.STATIC_OBJECTS);
+//            }
+//        }
+//    }
+
+
+    private void createWallOfBricks(Vector2 windowDimensions, Renderable imageReader,CollisionStrategy collisionStrategy) {
+        float brickLength = ((windowDimensions.x()) / numOfBricksInRow);
+        float brickHeight = 15; //make const from args??
+        for (int i = 0; i < numOfRows; i++) {
+            for (int j = 0; j < numOfBricksInRow; j++) {
+                Brick brick = new Brick(new Vector2(j * brickLength, i*brickHeight),
+                        new Vector2(brickLength, brickHeight), imageReader,collisionStrategy);
+                gameObjects().addGameObject(brick, Layer.STATIC_OBJECTS);
+            }
+        }
     }
 
     private void createWall(Vector2 windowDimensions) {
@@ -119,6 +145,7 @@ public class BrickerGameManager extends GameManager {
             ballVelY *= -1;
         }
         ball.setVelocity(new Vector2(ballVelX,ballVelY));
+        System.out.print("hii");
     }
 
     private void createPaddle(Renderable paddleImage, UserInputListener inputListener,
@@ -136,21 +163,8 @@ public class BrickerGameManager extends GameManager {
         gameObjects().addGameObject(wallPaper, Layer.BACKGROUND);
     }
 
-    private void createWallOfBricks(Vector2 windowDimensions, Renderable imageReader) {
-        float brickLength = (windowDimensions.x() - 2 * 10) / numOfBricksInRow - 2;
-        float brickHeight = 15; //make const from args??
-        for (int i = 0; i < numOfRow; i++) {
-            for (int j = 0; j < numOfBricksInRow; j++) {
-                Brick brick = new Brick(new Vector2(j * (brickLength+2) + 10, i*(brickHeight+2)+ 10),
-                        new Vector2(brickLength, brickHeight), imageReader, null);
-                brick.setCenter(new Vector2((int) windowDimensions.x() - 50, (int) windowDimensions.y() - 30));
-                gameObjects().addGameObject(brick, Layer.STATIC_OBJECTS);
-            }
-        }
-    }
-
     public static void main(String[] args) {
-        int numOfRows, numOfBricksInRow;
+        int numOfRows, numOfBricksInRow = 0;
         if (args.length == 2) {
             numOfRows =  Integer.parseInt(args[1]);
             numOfBricksInRow =  Integer.parseInt(args[2]);
