@@ -31,13 +31,6 @@ public class BouncingBallGameManager extends GameManager {
     public void initializeGame(ImageReader imageReader, SoundReader soundReader, UserInputListener inputListener, WindowController windowController) {
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
         Vector2 windowDimensions = windowController.getWindowDimensions();
-        Renderable brickImage = imageReader.readImage("assets/brick.png", false);
-
-        BrickerGameManager brickerGameManager = new BrickerGameManager();
-        CollisionStrategy collisionStrategy = new BasicCollisionStrategy(brickerGameManager);
-        Brick brick = new Brick(new Vector2(20,60),
-                new Vector2(windowDimensions.x() - 50,15), brickImage,collisionStrategy);
-        brickerGameManager.gameObjects().addGameObject(brick, Layer.STATIC_OBJECTS);
 
         // Creating wallpaper
         createWallPaper(imageReader, windowDimensions);
@@ -55,6 +48,15 @@ public class BouncingBallGameManager extends GameManager {
 
         // Creating walls
         createWall(windowDimensions);
+
+//         Creating one brick
+        BrickerGameManager brickerGameManager = new BrickerGameManager(7, 8, windowController, imageReader);
+        Renderable brickImage = imageReader.readImage("assets/brick.png", false);
+        CollisionStrategy collisionStrategy = new BasicCollisionStrategy(brickerGameManager);
+        Brick brick = new Brick(new Vector2(20,60),
+                new Vector2(windowDimensions.x() - 50,15), brickImage,collisionStrategy);
+        gameObjects().addGameObject(brick, Layer.STATIC_OBJECTS);
+        System.out.println("hello");
     }
 
     private void createWall(Vector2 windowDimensions) {
@@ -121,7 +123,6 @@ public class BouncingBallGameManager extends GameManager {
     }
 
     public static void main(String[] args) {
-
         BouncingBallGameManager window = new BouncingBallGameManager("Bouncing Ball",
                 new Vector2(700, 500));
         window.run();
