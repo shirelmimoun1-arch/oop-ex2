@@ -28,4 +28,9 @@ public class Brick extends GameObject {
         super.onCollisionEnter(other, collision);
         collisionStrategy.onCollision(this, other);
     }
+
+    @Override
+    public String getTag() {
+        return super.getTag() + "Brick";
+    }
 }

@@ -14,6 +14,8 @@ public class BasicCollisionStrategy implements CollisionStrategy {
     }
     private static final String MESSAGE = "collision with brick detected";
 
+
+
     @Override
     public void onCollision(GameObject object1, GameObject object2) {
 //        if (object2 instanceof Ball) {

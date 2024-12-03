@@ -24,6 +24,11 @@ public class Ball extends GameObject {
     }
 
     @Override
+    public String getTag() {
+        return super.getTag() + "Ball";
+    }
+
+    @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
         Vector2 newVelocity = getVelocity().flipped(collision.getNormal()); // the ball collision with paddle \/

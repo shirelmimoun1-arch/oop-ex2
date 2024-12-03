@@ -3,14 +3,16 @@ package bricker.gameobjects;
 import danogl.GameObject;
 import danogl.collisions.Collision;
 import danogl.gui.UserInputListener;
+import danogl.gui.WindowController;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
 import java.awt.event.KeyEvent;
 
-public class UserPaddle extends GameObject {
+public class Paddle extends GameObject {
     private static final float MOVEMENT_SPEED = 300;
-    private final UserInputListener inputListener;
+    private UserInputListener inputListener;
+    private Vector2 windowDimensions;
 
     /**
      * Construct a new GameObject instance.
@@ -22,9 +24,16 @@ public class UserPaddle extends GameObject {
      *                      the GameObject will not be rendered.
      * @param inputListener
      */
-    public UserPaddle(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable, UserInputListener inputListener) {
+    public Paddle(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable,
+                  UserInputListener inputListener, Vector2 windowDimensions) {
         super(topLeftCorner, dimensions, renderable);
         this.inputListener = inputListener;
+        this.windowDimensions = windowDimensions;
+    }
+
+    @Override
+    public String getTag() {
+        return super.getTag() + "Paddle";
     }
 
     @Override
@@ -39,10 +48,10 @@ public class UserPaddle extends GameObject {
         }
         if(inputListener.isKeyPressed(KeyEvent.VK_RIGHT)) {
             float topRightCorner = getTopLeftCorner().x() + this.getDimensions().x();
-//            if (topRightCorner >= ) {
-//                setTopLeftCorner(new Vector2(getTopLeftCorner().x() + this.getDimensions().x(),
-//                        getTopLeftCorner().y()));
-//            }
+            if (topRightCorner >= windowDimensions.x()) {
+                setTopLeftCorner(new Vector2(windowDimensions.x() - this.getDimensions().x(),
+                        getTopLeftCorner().y()));
+            }
             movementDir = movementDir.add(Vector2.RIGHT);
         }
         setVelocity(movementDir.mult(MOVEMENT_SPEED));
