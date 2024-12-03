@@ -56,7 +56,7 @@ public class BouncingBallGameManager extends GameManager {
         Brick brick = new Brick(new Vector2(20,60),
                 new Vector2(windowDimensions.x() - 50,15), brickImage,collisionStrategy);
         gameObjects().addGameObject(brick, Layer.STATIC_OBJECTS);
-        System.out.println("hello");
+//        System.out.println("hello");
     }
 
     private void createWall(Vector2 windowDimensions) {
