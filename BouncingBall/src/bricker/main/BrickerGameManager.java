@@ -97,9 +97,6 @@ public class BrickerGameManager extends GameManager {
         // Creating user paddles
         createUserPaddle(paddleImage, inputListener, windowDimensions);
 
-        // Creating ai paddles
-        createAiPaddle(paddleImage, windowDimensions);
-
         // Creating walls
         createWall(windowDimensions);
 
@@ -153,18 +150,13 @@ public class BrickerGameManager extends GameManager {
             ballVelY *= -1;
         }
         ball.setVelocity(new Vector2(ballVelX,ballVelY));
+        System.out.print("hi");
     }
 
     private void createUserPaddle(Renderable paddleImage, UserInputListener inputListener, Vector2 windowDimensions){
         GameObject userPaddle = new UserPaddle(Vector2.ZERO, new Vector2(PADDLE_WIDTH, PADDLE_HEIGHT), paddleImage, inputListener);
         userPaddle.setCenter(new Vector2(windowDimensions.x()/2, (int)windowDimensions.y()-30));
         gameObjects().addGameObject(userPaddle);
-    }
-
-    private void createAiPaddle(Renderable paddleImage, Vector2 windowDimensions){
-        GameObject aiPaddle = new GameObject(Vector2.ZERO, new Vector2(PADDLE_WIDTH, PADDLE_HEIGHT), paddleImage);
-        aiPaddle.setCenter(new Vector2(windowDimensions.x()/2, 30));
-        gameObjects().addGameObject(aiPaddle);
     }
 
     private void createWallPaper(ImageReader imageReader,Vector2 windowDimensions){
