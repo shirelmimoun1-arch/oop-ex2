@@ -150,7 +150,7 @@ public class BrickerGameManager extends GameManager {
             ballVelY *= -1;
         }
         ball.setVelocity(new Vector2(ballVelX,ballVelY));
-        System.out.print("hi");
+        System.out.print("hii");
     }
 
     private void createUserPaddle(Renderable paddleImage, UserInputListener inputListener, Vector2 windowDimensions){
