@@ -24,6 +24,7 @@ public class BasicCollisionStrategy implements CollisionStrategy {
 //            objectCollection.removeGameObject(object1);
 //        }
         if (object1.getTag().equals("Brick") && object2.getTag().equals("Ball")) {
+            brickerGameManager.increasebricksHitCounter();
             brickerGameManager.removeBrick(object1);
         }
     }

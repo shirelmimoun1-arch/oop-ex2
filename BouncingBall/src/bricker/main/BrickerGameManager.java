@@ -3,16 +3,16 @@ import bricker.brick_strategies.BasicCollisionStrategy;
 import bricker.brick_strategies.CollisionStrategy;
 import bricker.gameobjects.Ball;
 import bricker.gameobjects.Brick;
+import bricker.gameobjects.GraphicHeart;
 import bricker.gameobjects.Paddle;
 import danogl.GameManager;
 import danogl.GameObject;
-import danogl.collisions.GameObjectCollection;
 import danogl.collisions.Layer;
 import danogl.gui.*;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
-import bricker.gameobjects.Brick;
 
+import java.awt.event.KeyEvent;
 import java.util.Random;
 
 public class BrickerGameManager extends GameManager {
@@ -38,12 +38,19 @@ public class BrickerGameManager extends GameManager {
     private Vector2 windowDimensions;
     private static final int DEFAUL_NUM_OF_FAILURES = 3;
     private int numOfFailer = DEFAUL_NUM_OF_FAILURES;
+    private int bricksHitCounter ;
+
 
 
     public BrickerGameManager(String windowTitle, Vector2 windowDimensions, int numOfRow, int numOfBricksInRow) {
         super(windowTitle, windowDimensions);
         this.numOfRows = numOfRow;
         this.numOfBricksInRow = numOfBricksInRow;
+        this.bricksHitCounter = 0;
+    }
+
+    public void increasebricksHitCounter(){
+        bricksHitCounter++;
     }
 
     public void removeBrick(GameObject brick) {
@@ -76,6 +83,7 @@ public class BrickerGameManager extends GameManager {
         Renderable brickImage = imageReader.readImage("assets/brick.png", false);
         CollisionStrategy collisionStrategy = new BasicCollisionStrategy(this);
         createWallOfBricks(windowDimensions, brickImage, collisionStrategy);
+        createGraphicHearts(imageReader, windowDimensions);
     }
 
     private void createWallOfBricks(Vector2 windowDimensions, Renderable imageReader,CollisionStrategy collisionStrategy) {
@@ -161,24 +169,58 @@ public class BrickerGameManager extends GameManager {
         gameObjects().addGameObject(wallPaper, Layer.BACKGROUND);
     }
 
+    private void createGraphicHearts(ImageReader imageReader, Vector2 windowDimensions){
+        Renderable heartImage = imageReader.readImage("assets/heart.png", true);
+        for (int i = 0; i < numOfFailer; i++) {
+            GameObject heart = new GraphicHeart(Vector2.ZERO, new Vector2(30, 30), heartImage);
+            heart.setCenter(new Vector2(30*(i+1), windowDimensions.y()-20));
+            gameObjects().addGameObject(heart, Layer.UI);
+        }
+    }
+    private void removeGraphicHearts(){
+        for (GameObject gameObject : gameObjects().objectsInLayer(Layer.UI)) {
+            String curTag = gameObject.getTag();
+            if (curTag.equals("Graphic Heart")){
+                gameObjects().removeGameObject(gameObject, Layer.UI);
+                return;
+            }
+        }
+    }
+
+
+
+    private void checkObjectExit() {
+        for (GameObject gameObject : gameObjects().objectsInLayer(Layer.DEFAULT)) {
+            double objectHeight = gameObject.getCenter().y();
+            if (objectHeight >= windowDimensions.y() - windowDimensions.mult(WALL_FACTOR).y()) {
+                switch (gameObject.getTag()) {
+                    case "Ball":
+                        numOfFailer--;
+                        checkForGameEnd();
+                        removeGraphicHearts(); // check if last heart needs to be disapired before pop window
+                        gameObject.setVelocity(createRandomVelocity());
+                        gameObject.setCenter(windowDimensions.mult(0.5f));
+                }
+            }
+        }
+    }
+
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-        checkForGameEnd();
+        checkObjectExit();
     }
 
+
     private void checkForGameEnd() {
-        double ballHeight = ball.getCenter().y();
         String prompt = "";
-        if(ballHeight >= windowDimensions.y() - windowDimensions.mult(WALL_FACTOR).y()){
-            numOfFailer = numOfFailer-1;
-            ball.setVelocity(createRandomVelocity());
-            ball.setCenter(windowDimensions.mult(0.5f));
-        }
         if (numOfFailer <= 0){
             prompt = "You Lose!";
         }
-        //end of brick
+        if (bricksHitCounter == numOfBricksInRow*numOfRows){
+            prompt = "You Win!";
+        }
+        //|| inputListener.isKeyPressed(KeyEvent.VK_W))
         if (!prompt.isEmpty()){
             prompt += " Play again?";
             if(windowController.openYesNoDialog(prompt)){

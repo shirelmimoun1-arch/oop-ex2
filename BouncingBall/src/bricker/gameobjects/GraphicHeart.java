@@ -17,4 +17,8 @@ public class GraphicHeart extends GameObject {
     public GraphicHeart(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable) {
         super(topLeftCorner, dimensions, renderable);
     }
+    @Override
+    public String getTag() {
+        return super.getTag() + "Graphic Heart";
+    }
 }
