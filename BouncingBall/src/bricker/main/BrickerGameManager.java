@@ -1,18 +1,17 @@
 package bricker.main;
 import bricker.brick_strategies.BasicCollisionStrategy;
 import bricker.brick_strategies.CollisionStrategy;
-import bricker.gameobjects.Ball;
-import bricker.gameobjects.Brick;
-import bricker.gameobjects.GraphicHeart;
-import bricker.gameobjects.Paddle;
+import bricker.gameobjects.*;
 import danogl.GameManager;
 import danogl.GameObject;
 import danogl.collisions.Layer;
 import danogl.gui.*;
 import danogl.gui.rendering.Renderable;
+import danogl.gui.rendering.TextRenderable;
 import danogl.util.Vector2;
+import bricker.gameobjects.Brick;
 
-import java.awt.event.KeyEvent;
+import java.awt.*;
 import java.util.Random;
 
 public class BrickerGameManager extends GameManager {
@@ -31,13 +30,14 @@ public class BrickerGameManager extends GameManager {
     private static final String CLASH_SOUND_PATH = "assets/blop.wav";
     private static final String WALLPAPER_PICTURE_PATH = "assets/DARK_BG2_small.jpeg";
     private static final String WINDOW_TITLE = "Bouncing Ball";
+    private static final Color INITIAL_COLOR = Color.GREEN;
     private  int numOfBricksInRow;
     private int numOfRows;
     private Ball ball;
     private WindowController windowController;
     private Vector2 windowDimensions;
-    private static final int DEFAUL_NUM_OF_FAILURES = 3;
-    private int numOfFailer = DEFAUL_NUM_OF_FAILURES;
+    private static final int DEFAULT_NUM_OF_LIVES = 3;
+    private int numOfHeartsRemain = DEFAULT_NUM_OF_LIVES;
     private int bricksHitCounter ;
 
 
@@ -77,13 +77,19 @@ public class BrickerGameManager extends GameManager {
         // Creating user paddles
         createPaddle(paddleImage, inputListener, windowDimensions);
 
-        // Creating walls
+        // Creating borders
         createBorder(windowDimensions);
 
+        // Creating WallOfBricks
         Renderable brickImage = imageReader.readImage("assets/brick.png", false);
         CollisionStrategy collisionStrategy = new BasicCollisionStrategy(this);
         createWallOfBricks(windowDimensions, brickImage, collisionStrategy);
+
+        // Creating GraphicHearts
         createGraphicHearts(imageReader, windowDimensions);
+
+        // Creating NumericalHearts
+        createNumericalHearts();
     }
 
     private void createWallOfBricks(Vector2 windowDimensions, Renderable imageReader,CollisionStrategy collisionStrategy) {
@@ -171,22 +177,37 @@ public class BrickerGameManager extends GameManager {
 
     private void createGraphicHearts(ImageReader imageReader, Vector2 windowDimensions){
         Renderable heartImage = imageReader.readImage("assets/heart.png", true);
-        for (int i = 0; i < numOfFailer; i++) {
+        for (int i = 0; i < numOfHeartsRemain; i++) {
             GameObject heart = new GraphicHeart(Vector2.ZERO, new Vector2(30, 30), heartImage);
             heart.setCenter(new Vector2(30*(i+1), windowDimensions.y()-20));
             gameObjects().addGameObject(heart, Layer.UI);
         }
     }
-    private void removeGraphicHearts(){
+
+    private void removeOneHeart(){
+        boolean graficHeartFlag = false;
+        boolean numericHeartFlag = false;
         for (GameObject gameObject : gameObjects().objectsInLayer(Layer.UI)) {
             String curTag = gameObject.getTag();
-            if (curTag.equals("Graphic Heart")){
+            if (curTag.equals("Graphic Heart") && !graficHeartFlag){
                 gameObjects().removeGameObject(gameObject, Layer.UI);
-                return;
+                graficHeartFlag = true;
+            }
+            else if(curTag.equals("Numerical Heart") && !numericHeartFlag){
+                NumericalHeart numericHeart = (NumericalHeart) gameObject;
+                numericHeart.UpdateNumericalHeart(numOfHeartsRemain);
+                numericHeartFlag = true;
             }
         }
     }
 
+    private void createNumericalHearts() {
+        TextRenderable numericalHeartText = new TextRenderable("Lives: " + DEFAULT_NUM_OF_LIVES);
+        numericalHeartText.setColor(INITIAL_COLOR);
+        GameObject numericalHeart = new NumericalHeart(new Vector2(0, windowDimensions.y() - 80),
+                new Vector2(30, 30), numericalHeartText);
+        gameObjects().addGameObject(numericalHeart, Layer.UI);
+    }
 
 
     private void checkObjectExit() {
@@ -195,9 +216,8 @@ public class BrickerGameManager extends GameManager {
             if (objectHeight >= windowDimensions.y() - windowDimensions.mult(WALL_FACTOR).y()) {
                 switch (gameObject.getTag()) {
                     case "Ball":
-                        numOfFailer--;
-                        checkForGameEnd();
-                        removeGraphicHearts(); // check if last heart needs to be disapired before pop window
+                        numOfHeartsRemain--;
+                        removeOneHeart(); // check if last heart needs to be dissapired before pop window
                         gameObject.setVelocity(createRandomVelocity());
                         gameObject.setCenter(windowDimensions.mult(0.5f));
                 }
@@ -209,12 +229,13 @@ public class BrickerGameManager extends GameManager {
     public void update(float deltaTime) {
         super.update(deltaTime);
         checkObjectExit();
+        checkForGameEnd();
     }
 
 
     private void checkForGameEnd() {
         String prompt = "";
-        if (numOfFailer <= 0){
+        if (numOfHeartsRemain <= 0){
             prompt = "You Lose!";
         }
         if (bricksHitCounter == numOfBricksInRow*numOfRows){
@@ -225,7 +246,7 @@ public class BrickerGameManager extends GameManager {
             prompt += " Play again?";
             if(windowController.openYesNoDialog(prompt)){
                 windowController.resetGame();
-                numOfFailer = DEFAUL_NUM_OF_FAILURES;
+                numOfHeartsRemain = DEFAULT_NUM_OF_LIVES;
             }
             else{
                 windowController.closeWindow();

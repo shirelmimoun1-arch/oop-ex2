@@ -21,4 +21,7 @@ public class GraphicHeart extends GameObject {
     public String getTag() {
         return super.getTag() + "Graphic Heart";
     }
+
 }
+
+
