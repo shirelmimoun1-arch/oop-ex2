@@ -6,7 +6,11 @@ import danogl.collisions.Collision;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
+/**
+ * This class is responsible for the Brick game object.
+ */
 public class Brick extends GameObject {
+    public static final String BRICK_STRING = "Brick";
     private CollisionStrategy collisionStrategy;
 
     /**
@@ -23,14 +27,25 @@ public class Brick extends GameObject {
         this.collisionStrategy = collisionStrategy;
     }
 
+    /**
+     * Defines the behavior of the brick when it collides with another game object.
+     * @param other The GameObject with which a collision occurred.
+     * @param collision Information regarding this collision.
+     *                  A reasonable elastic behavior can be achieved with:
+     *                  setVelocity(getVelocity().flipped(collision.getNormal()));
+     */
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
         collisionStrategy.onCollision(this, other);
     }
 
+    /**
+     * Returns the number of collisions of the brick with other objects.
+     * @return The number of collisions of the brick.
+     */
     @Override
     public String getTag() {
-        return super.getTag() + "Brick";
+        return super.getTag() + BRICK_STRING;
     }
 }

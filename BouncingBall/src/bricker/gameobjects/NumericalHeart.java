@@ -1,15 +1,17 @@
 package bricker.gameobjects;
 
-
 import danogl.GameObject;
 import danogl.gui.rendering.Renderable;
 import danogl.gui.rendering.TextRenderable;
 import danogl.util.Vector2;
-
 import java.awt.*;
 
+/**
+ * This class is responsible for the NumericalHeart game object.
+ */
 public class NumericalHeart extends GameObject {
-
+    public static final String NUMERICAL_HEART_STRING = "Numerical Heart";
+    public static final String NUMERICAL_HEART_TEXT = "Lives: ";
     private final TextRenderable renderable;
 
     /**
@@ -26,18 +28,26 @@ public class NumericalHeart extends GameObject {
         this.renderable = (TextRenderable) renderable;
     }
 
+    /**
+     * A getter for the tag name of the NumericalHeart.
+     * @return A string that represents the name tag of the NumericalHeart.
+     */
     @Override
     public String getTag() {
-        return super.getTag() + "Numerical Heart";
+        return super.getTag() + NUMERICAL_HEART_STRING;
     }
 
+    /**
+     * Updates the numerical hearts color and text renderer when the player looses a life in the game.
+     * @param numOfLives
+     */
     public void UpdateNumericalHeart(int numOfLives){
         changeNumOfLives(numOfLives);
         setNumericalHeartColor(numOfLives);
     }
 
     private void changeNumOfLives(int numOfLives) {
-        String newName = "Lives: " + String.valueOf(numOfLives);
+        String newName = NUMERICAL_HEART_TEXT + String.valueOf(numOfLives);
         renderable.setString(newName);
     }
 
@@ -56,15 +66,4 @@ public class NumericalHeart extends GameObject {
     }
 }
 
-//    private void updateTextAndColor() {
-//        textRenderable.setString("Lives: " + lives);
-//        if (lives >= 3) {
-//            textRenderable.setColor(Color.GREEN);
-//        } else if (lives == 2) {
-//            textRenderable.setColor(Color.YELLOW);
-//        } else if (lives == 1) {
-//            textRenderable.setColor(Color.RED);
-//        }
-//    }
-//}
 

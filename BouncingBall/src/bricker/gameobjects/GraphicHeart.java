@@ -4,7 +4,11 @@ import danogl.GameObject;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
+/**
+ * This class is responsible for the GraphicHeart game object.
+ */
 public class GraphicHeart extends GameObject {
+    public static final String GRAPHIC_HEART_STRING = "Graphic Heart";
     /**
      * Construct a new GameObject instance.
      *
@@ -17,9 +21,14 @@ public class GraphicHeart extends GameObject {
     public GraphicHeart(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable) {
         super(topLeftCorner, dimensions, renderable);
     }
+
+    /**
+     * A getter for the tag name of the GraphicHeart.
+     * @return A string that represents the name tag of the GraphicHeart.
+     */
     @Override
     public String getTag() {
-        return super.getTag() + "Graphic Heart";
+        return super.getTag() + GRAPHIC_HEART_STRING;
     }
 
 }

@@ -9,13 +9,17 @@ import danogl.util.Vector2;
 
 import java.awt.event.KeyEvent;
 
+/**
+ * This class is responsible for the Paddle game object.
+ */
 public class Paddle extends GameObject {
+    private static final String PADDLE_STRING = "Paddle";
     private static final float MOVEMENT_SPEED = 300;
     private UserInputListener inputListener;
     private Vector2 windowDimensions;
 
     /**
-     * Construct a new GameObject instance.
+     * Construct a new Paddle instance.
      *
      * @param topLeftCorner Position of the object, in window coordinates (pixels).
      *                      Note that (0,0) is the top-left corner of the window.
@@ -31,11 +35,26 @@ public class Paddle extends GameObject {
         this.windowDimensions = windowDimensions;
     }
 
+    /**
+     * A getter for the tag name of the Paddle.
+     * @return A string that represents the name tag of the Paddle.
+     */
     @Override
     public String getTag() {
-        return super.getTag() + "Paddle";
+        return super.getTag() + PADDLE_STRING;
     }
 
+    /**
+     * Updates the behavior of the paddle during each frame. This method allows
+     * the user to control the paddle's movement left or right using the arrow keys.
+     * It also ensures that the paddle does not move outside the boundaries of the window.
+     * @param deltaTime The time elapsed, in seconds, since the last frame. Can
+     *                  be used to determine a new position/velocity by multiplying
+     *                  this delta with the velocity/acceleration respectively
+     *                  and adding to the position/velocity:
+     *                  velocity += deltaTime*acceleration
+     *                  pos += deltaTime*velocity
+     */
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
@@ -55,11 +74,5 @@ public class Paddle extends GameObject {
             movementDir = movementDir.add(Vector2.RIGHT);
         }
         setVelocity(movementDir.mult(MOVEMENT_SPEED));
-    }
-
-    @Override
-    public void onCollisionEnter(GameObject other, Collision collision) {
-        super.onCollisionEnter(other, collision);
-
     }
 }

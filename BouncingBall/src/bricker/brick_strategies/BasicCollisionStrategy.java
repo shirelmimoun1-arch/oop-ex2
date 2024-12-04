@@ -7,25 +7,30 @@ import bricker.main.BrickerGameManager;
 import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
 
+/**
+ * This class implements the basic collision strategy for bricks in the game.
+ */
 public class BasicCollisionStrategy implements CollisionStrategy {
     private BrickerGameManager brickerGameManager;
 
+    /**
+     * Constructs a new BasicCollisionStrategy instance.
+     * @param brickerGameManager
+     */
     public BasicCollisionStrategy(BrickerGameManager brickerGameManager) {
         this.brickerGameManager = brickerGameManager;
     }
 
-    private static final String MESSAGE = "collision with brick detected";
-
-
+    /**
+     * Handles the collision event between two game objects.
+     * @param object1 The first gameobject instance involved in the collision.
+     * @param object2 The second gameobject instance involved in the collision.
+     */
     @Override
     public void onCollision(GameObject object1, GameObject object2) {
-//        if (object2 instanceof Ball) {
-//            System.out.println(MESSAGE);
-//            objectCollection.removeGameObject(object1);
-//        }
-        if (object1.getTag().equals("Brick") && object2.getTag().equals("Ball")) {
-            brickerGameManager.increasebricksHitCounter();
-            brickerGameManager.removeBrick(object1);
+        if (object1.getTag().equals(Brick.BRICK_STRING) && object2.getTag().equals(Ball.BALL_STRING)) {
+        brickerGameManager.increasebricksHitCounter();
+        brickerGameManager.removeBrick(object1);
         }
     }
 }

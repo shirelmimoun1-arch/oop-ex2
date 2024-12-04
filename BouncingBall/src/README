@@ -30,3 +30,11 @@ Disadvantages of the Design Choice:
 2) Dependency on GameObjectCollection:
     Other classes are tightly coupled to the GameObjectCollection's interface, meaning changes to its API
     could impact multiple components.
+
+Explain why we added the getTag public method to all the game objects:
+We added the getTag public method to all game objects to facilitate identifying the type of object when
+iterating through the game object list. This allows us to manage the behavior of each object appropriately
+based on its tag. Using a tag name for identification eliminates the need for the instanceof operator,
+which is generally considered bad practice due to its impact on code flexibility and maintainability.
+
+explain why we added UpdateNumericalHeart in numericalheart class

@@ -1,4 +1,5 @@
 package bricker.main;
+
 import bricker.brick_strategies.BasicCollisionStrategy;
 import bricker.brick_strategies.CollisionStrategy;
 import bricker.gameobjects.*;
@@ -10,12 +11,15 @@ import danogl.gui.rendering.Renderable;
 import danogl.gui.rendering.TextRenderable;
 import danogl.util.Vector2;
 import bricker.gameobjects.Brick;
-
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.Random;
 
-
+/**
+ * The main manager class for the Bricker game. This class is responsible for initializing,
+ * managing, and updating all game objects, as well as handling core game logic such as
+ * collisions, user inputs, game state transitions, and rendering.
+ */
 public class BrickerGameManager extends GameManager {
     private static final int DEFAULT_ROWS = 7;
     private static final int NUM_OF_BRICK = 8;
@@ -30,17 +34,13 @@ public class BrickerGameManager extends GameManager {
     private static final String CLASH_SOUND_PATH = "assets/blop.wav";
     private static final String WALLPAPER_PICTURE_PATH = "assets/DARK_BG2_small.jpeg";
     private static final String HEART_PICTURE_PATH = "assets/heart.png";
-    private static final String WINDOW_TITLE = "Bouncing Ball";
+    private static final String WINDOW_TITLE = "Bricker Game";
     private static final Color INITIAL_COLOR = Color.GREEN;
     private static final String BRICK_COLLISION_MESSAGE = "collision with brick detected";
-    private static final String GRAPHIC_HEART_TAG = "Graphic Heart";
-    private static final String NUMERIC_HEART_TAG = "Numerical Heart";
-    private static final String BALL_TAG = "Ball";
     private static final String EMPTY_PROMPT = "";
     private static final String LOSE_MESSAGE = "You Lose!";
     private static final String WIN_MESSAGE = "You Win!";
     private static final String ASK_TO_PLAY_AGAIN_MESSAGE = " Play again?";
-    private static final String NUMERIC_HEART_STRING = "Lives: ";
     private static final float FACTOR_OF_HALF = 0.5f;
     private static final float FACTOR_OF_X_GAP = 0.01f;
     private static final float FACTOR_OF_Y_GAP = 0.02f;
@@ -54,6 +54,13 @@ public class BrickerGameManager extends GameManager {
     private int bricksHitCounter ;
     UserInputListener inputListener;
 
+    /**
+     * Constructs a new BrickerGameManager instance.
+     * @param windowTitle The title displayed on the game window.
+     * @param windowDimensions The dimensions of the game window.
+     * @param numOfRow The number of rows in the wall of bricks.
+     * @param numOfBricksInRow The number of bricks per row.
+     */
     public BrickerGameManager(String windowTitle, Vector2 windowDimensions, int numOfRow, int numOfBricksInRow) {
         super(windowTitle, windowDimensions);
         this.numOfRows = numOfRow;
@@ -61,16 +68,18 @@ public class BrickerGameManager extends GameManager {
         this.bricksHitCounter = 0;
     }
 
-    public void increasebricksHitCounter(){
-        bricksHitCounter++;
-    }
-
-    public void removeBrick(GameObject brick) {
-        System.out.println(BRICK_COLLISION_MESSAGE);
-        gameObjects().removeGameObject(brick,Layer.STATIC_OBJECTS);
-    }
-
-
+    /**
+     * Initializes all game objects and sets up the game window and its properties.
+     * @param imageReader Contains a single method: readImage, which reads an image from disk.
+     *                 See its documentation for help.
+     * @param soundReader Contains a single method: readSound, which reads a wav file from
+     *                    disk. See its documentation for help.
+     * @param inputListener Contains a single method: isKeyPressed, which returns whether
+     *                      a given key is currently pressed by the user or not. See its
+     *                      documentation.
+     * @param windowController Contains an array of helpful, self explanatory methods
+     *                         concerning the window.
+     */
     @Override
     public void initializeGame(ImageReader imageReader, SoundReader soundReader,
                                UserInputListener inputListener, WindowController windowController) {
@@ -79,7 +88,6 @@ public class BrickerGameManager extends GameManager {
         // taking too long to update, which means the target frame-rate (120) cannot be reached. If your
         // frame-rate is low, then either your update pass is taking too long (too many objects? an overly
         // complex logic?), or the target frame-rate is set too high for the hardware.
-
 
         this.inputListener = inputListener;
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
@@ -109,6 +117,22 @@ public class BrickerGameManager extends GameManager {
 
         // Creating NumericalHearts
         createNumericalHearts();
+    }
+
+    /**
+     * Increments the number of bricks hit in the game.
+     */
+    public void increasebricksHitCounter(){
+        bricksHitCounter++;
+    }
+
+    /**
+     * Removes a brick from the game upon collision with the ball.
+     * @param brick
+     */
+    public void removeBrick(GameObject brick) {
+        System.out.println(BRICK_COLLISION_MESSAGE);
+        gameObjects().removeGameObject(brick,Layer.STATIC_OBJECTS);
     }
 
     private void createWallOfBricks(Vector2 windowDimensions, Renderable imageReader,
@@ -210,11 +234,11 @@ public class BrickerGameManager extends GameManager {
         boolean numericHeartFlag = false;
         for (GameObject gameObject : gameObjects().objectsInLayer(Layer.UI)) {
             String curTag = gameObject.getTag();
-            if (curTag.equals(GRAPHIC_HEART_TAG) && !graficHeartFlag){
+            if (curTag.equals(GraphicHeart.GRAPHIC_HEART_STRING) && !graficHeartFlag){
                 gameObjects().removeGameObject(gameObject, Layer.UI);
                 graficHeartFlag = true;
             }
-            else if(curTag.equals(NUMERIC_HEART_TAG) && !numericHeartFlag){
+            else if(curTag.equals(NumericalHeart.NUMERICAL_HEART_STRING) && !numericHeartFlag){
                 NumericalHeart numericHeart = (NumericalHeart) gameObject;
                 numericHeart.UpdateNumericalHeart(numOfHeartsRemain);
                 numericHeartFlag = true;
@@ -223,7 +247,7 @@ public class BrickerGameManager extends GameManager {
     }
 
     private void createNumericalHearts() {
-        TextRenderable numericalHeartText = new TextRenderable(NUMERIC_HEART_STRING + DEFAULT_NUM_OF_LIVES);
+        TextRenderable numericalHeartText = new TextRenderable(NumericalHeart.NUMERICAL_HEART_TEXT + DEFAULT_NUM_OF_LIVES);
         numericalHeartText.setColor(INITIAL_COLOR);
         GameObject numericalHeart = new NumericalHeart(new Vector2(0, windowDimensions.y() - 80),
                 new Vector2(30, 30), numericalHeartText);
@@ -236,7 +260,7 @@ public class BrickerGameManager extends GameManager {
             double objectHeight = gameObject.getCenter().y();
             if (objectHeight >= windowDimensions.y() - windowDimensions.mult(WALL_FACTOR).y()) {
                 switch (gameObject.getTag()) {
-                    case BALL_TAG:
+                    case Ball.BALL_STRING:
                         numOfHeartsRemain--;
                         removeOneHeart(); // check if last heart needs to be dissapired before pop window
                         gameObject.setVelocity(createRandomVelocity());
@@ -246,13 +270,22 @@ public class BrickerGameManager extends GameManager {
         }
     }
 
+    /**
+     * Updates the game current state based on the objects. Checks if the game end and prompts a message
+     * accordingly.
+     * @param deltaTime The time, in seconds, that passed since the last invocation
+     *                  of this method (i.e., since the last frame). This is useful
+     *                  for either accumulating the total time that passed since some
+     *                  event, or for physics integration (i.e., multiply this by
+     *                  the acceleration to get an estimate of the added velocity or
+     *                  by the velocity to get an estimate of the difference in position).
+     */
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
         checkObjectExit();
         checkForGameEnd();
     }
-
 
     private void checkForGameEnd() {
         String prompt = EMPTY_PROMPT;
@@ -276,6 +309,10 @@ public class BrickerGameManager extends GameManager {
 
     }
 
+    /**
+     * The main function that runs the game.
+     * @param args
+     */
     public static void main(String[] args) {
         int numOfRows, numOfBricksInRow = 0;
         if (args.length == 2) {
@@ -300,3 +337,4 @@ public class BrickerGameManager extends GameManager {
 //         frame-rate is low, then either your update pass is taking too long (too many objects? an overly
 //         complex logic?), or the target frame-rate is set too high for the hardware.
 // 3) check if the arguments are always valid or it needs to br checked
+// 4) explain why we added UpdateNumericalHeart in numericalheart class
