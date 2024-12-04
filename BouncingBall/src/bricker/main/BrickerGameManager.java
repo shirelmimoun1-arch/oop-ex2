@@ -1,10 +1,7 @@
 package bricker.main;
 import bricker.brick_strategies.BasicCollisionStrategy;
 import bricker.brick_strategies.CollisionStrategy;
-import bricker.gameobjects.Ball;
-import bricker.gameobjects.Brick;
-import bricker.gameobjects.GraphicHeart;
-import bricker.gameobjects.Paddle;
+import bricker.gameobjects.*;
 import danogl.GameManager;
 import danogl.GameObject;
 import danogl.collisions.Layer;
@@ -14,8 +11,10 @@ import danogl.gui.rendering.TextRenderable;
 import danogl.util.Vector2;
 import bricker.gameobjects.Brick;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.Random;
+
 
 public class BrickerGameManager extends GameManager {
     private static final int DEFAULT_ROWS = 7;
