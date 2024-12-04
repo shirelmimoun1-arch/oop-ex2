@@ -5,7 +5,6 @@ import bricker.gameobjects.Ball;
 import bricker.gameobjects.Brick;
 import bricker.main.BrickerGameManager;
 import danogl.GameObject;
-import danogl.collisions.GameObjectCollection;
 
 /**
  * This class implements the basic collision strategy for bricks in the game.
@@ -15,7 +14,7 @@ public class BasicCollisionStrategy implements CollisionStrategy {
 
     /**
      * Constructs a new BasicCollisionStrategy instance.
-     * @param brickerGameManager
+     * @param brickerGameManager An instance of the BrickerGameManager class
      */
     public BasicCollisionStrategy(BrickerGameManager brickerGameManager) {
         this.brickerGameManager = brickerGameManager;

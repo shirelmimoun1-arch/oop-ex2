@@ -39,7 +39,7 @@ public class NumericalHeart extends GameObject {
 
     /**
      * Updates the numerical hearts color and text renderer when the player looses a life in the game.
-     * @param numOfLives
+     * @param numOfLives The number of lives remaining.
      */
     public void UpdateNumericalHeart(int numOfLives){
         changeNumOfLives(numOfLives);
@@ -47,7 +47,7 @@ public class NumericalHeart extends GameObject {
     }
 
     private void changeNumOfLives(int numOfLives) {
-        String newName = NUMERICAL_HEART_TEXT + String.valueOf(numOfLives);
+        String newName = NUMERICAL_HEART_TEXT + numOfLives;
         renderable.setString(newName);
     }
 

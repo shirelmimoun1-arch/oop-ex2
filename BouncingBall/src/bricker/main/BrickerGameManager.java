@@ -128,7 +128,7 @@ public class BrickerGameManager extends GameManager {
 
     /**
      * Removes a brick from the game upon collision with the ball.
-     * @param brick
+     * @param brick The Brick object that is removed.
      */
     public void removeBrick(GameObject brick) {
         System.out.println(BRICK_COLLISION_MESSAGE);
@@ -311,10 +311,10 @@ public class BrickerGameManager extends GameManager {
 
     /**
      * The main function that runs the game.
-     * @param args
+     * @param args The arguments given by the user.
      */
     public static void main(String[] args) {
-        int numOfRows, numOfBricksInRow = 0;
+        int numOfRows, numOfBricksInRow;
         if (args.length == 2) {
             numOfBricksInRow =  Integer.parseInt(args[0]);
             numOfRows =  Integer.parseInt(args[1]);
@@ -330,7 +330,7 @@ public class BrickerGameManager extends GameManager {
 }
 
 //todo:
-// 1) check if last heart needs to be disappired before pop window
+// 1) check if last heart needs to be disappeared before pop window
 // 2) check the error:
 //         Warning: your frames are
 //         taking too long to update, which means the target frame-rate (120) cannot be reached. If your

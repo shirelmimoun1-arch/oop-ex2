@@ -1,9 +1,7 @@
 package bricker.gameobjects;
 
 import danogl.GameObject;
-import danogl.collisions.Collision;
 import danogl.gui.UserInputListener;
-import danogl.gui.WindowController;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
@@ -26,7 +24,7 @@ public class Paddle extends GameObject {
      * @param dimensions    Width and height in window coordinates.
      * @param renderable    The renderable representing the object. Can be null, in which case
      *                      the GameObject will not be rendered.
-     * @param inputListener
+     * @param inputListener Listens for user inputs (arrow keys or other controls) to move the paddle.
      */
     public Paddle(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable,
                   UserInputListener inputListener, Vector2 windowDimensions) {
