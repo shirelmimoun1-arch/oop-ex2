@@ -39,8 +39,7 @@ public class BrickerGameManager extends GameManager {
     private static final int DEFAUL_NUM_OF_FAILURES = 3;
     private int numOfFailer = DEFAUL_NUM_OF_FAILURES;
     private int bricksHitCounter ;
-
-
+    UserInputListener inputListener;
 
     public BrickerGameManager(String windowTitle, Vector2 windowDimensions, int numOfRow, int numOfBricksInRow) {
         super(windowTitle, windowDimensions);
@@ -63,6 +62,7 @@ public class BrickerGameManager extends GameManager {
     public void initializeGame(ImageReader imageReader, SoundReader soundReader,
                                UserInputListener inputListener, WindowController windowController) {
         this.windowController = windowController;
+        this.inputListener = inputListener;
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
         this.windowDimensions = windowController.getWindowDimensions();
 
@@ -86,18 +86,21 @@ public class BrickerGameManager extends GameManager {
         createGraphicHearts(imageReader, windowDimensions);
     }
 
+
     private void createWallOfBricks(Vector2 windowDimensions, Renderable imageReader,CollisionStrategy collisionStrategy) {
-        float brickLength = (windowDimensions.x() / (numOfBricksInRow+1));
-        float gapFromUpperWall = windowDimensions.mult(0.02f).y();
-        //float gapFromLeftWall = windowDimensions.mult(0.02f).x();
+        float gapX = windowDimensions.x()*0.01f;
+        float gapY = windowDimensions.y()*0.02f;
+        float brickLength = (windowDimensions.x()-(numOfBricksInRow+1)*gapX) / (numOfBricksInRow);
         float brickHeight = 15; //make const from args
         for (int i = 0; i < numOfRows; i++) {
             for (int j = 0; j < numOfBricksInRow; j++) {
-                Brick brick = new Brick(new Vector2((j * brickLength) +(brickLength/(numOfBricksInRow))
-                        ,(i*brickHeight)+gapFromUpperWall),
-                        new Vector2(brickLength, brickHeight), imageReader,collisionStrategy);
-                float x = (j * brickLength) +(brickLength/(numOfBricksInRow-1));
-                float y = (i*brickHeight)+gapFromUpperWall;
+                float x = (j * (brickLength+gapX)) +gapX;
+                float y = (i * (gapY+brickHeight));
+                Brick brick = new Brick(
+                        new Vector2(x,y),
+                        new Vector2(brickLength, brickHeight),
+                        imageReader,
+                        collisionStrategy);
                 gameObjects().addGameObject(brick, Layer.STATIC_OBJECTS);
             }
         }
@@ -196,7 +199,6 @@ public class BrickerGameManager extends GameManager {
                 switch (gameObject.getTag()) {
                     case "Ball":
                         numOfFailer--;
-                        checkForGameEnd();
                         removeGraphicHearts(); // check if last heart needs to be disapired before pop window
                         gameObject.setVelocity(createRandomVelocity());
                         gameObject.setCenter(windowDimensions.mult(0.5f));
@@ -209,6 +211,7 @@ public class BrickerGameManager extends GameManager {
     public void update(float deltaTime) {
         super.update(deltaTime);
         checkObjectExit();
+        checkForGameEnd();
     }
 
 
@@ -220,19 +223,21 @@ public class BrickerGameManager extends GameManager {
         if (bricksHitCounter == numOfBricksInRow*numOfRows){
             prompt = "You Win!";
         }
-        //|| inputListener.isKeyPressed(KeyEvent.VK_W))
+        if (inputListener.isKeyPressed(KeyEvent.VK_W)) {
+            prompt = "You Win!";
+        }
         if (!prompt.isEmpty()){
             prompt += " Play again?";
             if(windowController.openYesNoDialog(prompt)){
-                windowController.resetGame();
+                //reset game:
                 numOfFailer = DEFAUL_NUM_OF_FAILURES;
+                bricksHitCounter = 0;
+                windowController.resetGame();
             }
             else{
                 windowController.closeWindow();
             }
-
         }
-
     }
 
     public static void main(String[] args) {
