@@ -16,23 +16,23 @@ import java.util.Random;
  * collisions, user inputs, game state transitions, and rendering.
  */
 public class BrickerGameManager extends GameManager {
-    private static final int DEFAULT_ROWS = 7;
-    private static final int NUM_OF_BRICK = 8;
-    private static final int BALL_SPEED = 250;
-    private static final float WALL_FACTOR = 0.001f;
-    private static final String WINDOW_TITLE = "Bricker Game";
-    private static final String BRICK_COLLISION_MESSAGE = "collision with brick detected";
-    private static final String EMPTY_PROMPT = "";
-    private static final String LOSE_MESSAGE = "You Lose!";
-    private static final String WIN_MESSAGE = "You Win!";
-    private static final String ASK_TO_PLAY_AGAIN_MESSAGE = " Play again?";
-    private static final float FACTOR_OF_HALF = 0.5f;
+    public static final int DEFAULT_ROWS = 7;
+    public static final int NUM_OF_BRICK = 8;
+    public static final int BALL_SPEED = 250;
+    public static final float WALL_FACTOR = 0.001f;
+    public static final String WINDOW_TITLE = "Bricker Game";
+    public static final String BRICK_COLLISION_MESSAGE = "collision with brick detected";
+    public static final String EMPTY_PROMPT = "";
+    public static final String LOSE_MESSAGE = "You Lose!";
+    public static final String WIN_MESSAGE = "You Win!";
+    public static final String ASK_TO_PLAY_AGAIN_MESSAGE = " Play again?";
+    public static final float FACTOR_OF_HALF = 0.5f;
+    public static final int DEFAULT_NUM_OF_LIVES = 3;
     private  int numOfBricksInRow;
     private int numOfRows;
     private WindowController windowController;
     private Vector2 windowDimensions;
-    private static final int DEFAULT_NUM_OF_LIVES = 3;
-    private int numOfHeartsRemain = DEFAULT_NUM_OF_LIVES;
+    private int numOfHeartsRemain;
     private int bricksHitCounter ;
     private UserInputListener inputListener;
 
@@ -56,13 +56,14 @@ public class BrickerGameManager extends GameManager {
         this.numOfRows = numOfRow;
         this.numOfBricksInRow = numOfBricksInRow;
         this.bricksHitCounter = 0;
-        ballFactory = new BallFactory(this);
-        paddleFactory =  new PaddleFactory(this);
-        wallOfBricks = new WallOfBricksFactory(this);
-        wallPaperFactory = new WallPaperFactory(this);
-        bordersFactory = new BordersFactory(this);
-        numericHeartFactory = new NumericHeartFactory(this);
-        graphicHeartFactory = new GraphicHeartFactory(this);
+        this.ballFactory = new BallFactory(this);
+        this.paddleFactory =  new PaddleFactory(this);
+        this.wallOfBricks = new WallOfBricksFactory(this);
+        this.wallPaperFactory = new WallPaperFactory(this);
+        this.bordersFactory = new BordersFactory(this);
+        this.numericHeartFactory = new NumericHeartFactory(this);
+        this.graphicHeartFactory = new GraphicHeartFactory(this);
+        this.numOfHeartsRemain = DEFAULT_NUM_OF_LIVES;
     }
 
     /**
@@ -247,6 +248,6 @@ public class BrickerGameManager extends GameManager {
 //         taking too long to update, which means the target frame-rate (120) cannot be reached. If your
 //         frame-rate is low, then either your update pass is taking too long (too many objects? an overly
 //         complex logic?), or the target frame-rate is set too high for the hardware.
-// 3) check if the arguments are always valid or it needs to br checked
+// 3) check if the arguments are always valid or it needs to br checked V
 // 4) explain why we added UpdateNumericalHeart in numerical heart class
 // 5) should I, and how to create an object game factory
