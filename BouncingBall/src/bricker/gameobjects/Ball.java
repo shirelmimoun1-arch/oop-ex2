@@ -1,4 +1,5 @@
 package bricker.gameobjects;
+import bricker.brick_strategies.TurboCollisionStrategy;
 import danogl.GameObject;
 import danogl.collisions.Collision;
 import danogl.gui.Sound;
@@ -9,9 +10,17 @@ import danogl.util.Vector2;
  * This class is responsible for the ball game object.
  */
 public class Ball extends GameObject {
-    public static final String BALL_STRING = "Ball";
+    public static final String BALL_PICTURE_PATH = "assets/ball.png";
+    public static final String CLASH_SOUND_PATH = "assets/blop.wav";
+    public static final float BALL_RADIUS = 35;
+    public static final int BALL_SPEED = 200;
+    public static final String BALL_NAME = "Ball";
+    private final Renderable renderable;
     private Sound collisionSound;
-    private int collisionCounter; //track the number of collision of the ball
+    private int collisionCounter;
+    // Flag that indicates that the ball is in turbo mode
+    public boolean inTurboMode;
+    private int turboCollisions;
 
     /**
      * Construct a new Ball instance.
@@ -24,17 +33,11 @@ public class Ball extends GameObject {
      */
     public Ball(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable, Sound collisionSound) {
         super(topLeftCorner, dimensions, renderable);
+        this.renderable = renderable;
         this.collisionSound = collisionSound;
         this.collisionCounter = 0;
-    }
-
-    /**
-     * A getter for the tag name of the ball.
-     * @return A string that represents the name tag of the ball.
-     */
-    @Override
-    public String getTag() {
-        return super.getTag() + BALL_STRING;
+        this.inTurboMode = false;
+        this.turboCollisions = 0;
     }
 
     /**
@@ -50,7 +53,24 @@ public class Ball extends GameObject {
         Vector2 newVelocity = getVelocity().flipped(collision.getNormal()); // the ball collision with paddle
         setVelocity(newVelocity);
         collisionSound.play();
-        collisionCounter++;
+        this.collisionCounter++;
+        if (inTurboMode) {
+            turboCollisions++;
+            if (turboCollisions >= TurboCollisionStrategy.NUM_OF_BALL_COLLISION_WITH_THE_CHANGE) {
+                resetBall();
+                turboCollisions = 0;
+            }
+        }
+    }
+
+    public void setTurboMode(boolean inTurboMode ) {
+        this.inTurboMode = inTurboMode;
+    }
+
+    private void resetBall() {
+        setTurboMode(false);
+        setVelocity(getVelocity().mult(0.5f));
+        renderer().setRenderable(renderable);
     }
 
     /**
@@ -58,6 +78,7 @@ public class Ball extends GameObject {
      * @return The number of collisions of the ball.
      */
     public int getCollisionCounter() {
-        return collisionCounter;
+        return this.collisionCounter;
     }
+
 }

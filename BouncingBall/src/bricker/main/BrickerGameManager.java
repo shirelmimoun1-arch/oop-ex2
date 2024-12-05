@@ -1,11 +1,13 @@
 package bricker.main;
 
+import bricker.brick_strategies.ExtraBallCollisionStrategy;
 import bricker.factories.*;
 import bricker.gameobjects.*;
 import danogl.GameManager;
 import danogl.GameObject;
 import danogl.collisions.Layer;
 import danogl.gui.*;
+import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 import java.awt.event.KeyEvent;
 import java.util.Random;
@@ -18,7 +20,7 @@ import java.util.Random;
 public class BrickerGameManager extends GameManager {
     public static final int DEFAULT_ROWS = 7;
     public static final int NUM_OF_BRICK = 8;
-    public static final int BALL_SPEED = 250;
+    public static final int BALL_SPEED = 200;
     public static final float WALL_FACTOR = 0.001f;
     public static final String WINDOW_TITLE = "Bricker Game";
     public static final String BRICK_COLLISION_MESSAGE = "collision with brick detected";
@@ -30,6 +32,8 @@ public class BrickerGameManager extends GameManager {
     public static final int DEFAULT_NUM_OF_LIVES = 3;
     private  int numOfBricksInRow;
     private int numOfRows;
+    public ImageReader imageReader;
+    public SoundReader soundReader;
     private WindowController windowController;
     private Vector2 windowDimensions;
     private int numOfHeartsRemain;
@@ -81,13 +85,15 @@ public class BrickerGameManager extends GameManager {
     @Override
     public void initializeGame(ImageReader imageReader, SoundReader soundReader,
                                UserInputListener inputListener, WindowController windowController) {
+        this.imageReader = imageReader;
+        this.soundReader = soundReader;
         this.windowController = windowController;
+        this.inputListener = inputListener;
         windowController.setTargetFramerate(100); // because it sent this error: Warning: your frames are
         // taking too long to update, which means the target frame-rate (120) cannot be reached. If your
         // frame-rate is low, then either your update pass is taking too long (too many objects? an overly
         // complex logic?), or the target frame-rate is set too high for the hardware.
 
-        this.inputListener = inputListener;
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
         this.windowDimensions = windowController.getWindowDimensions();
 
@@ -95,16 +101,18 @@ public class BrickerGameManager extends GameManager {
         wallPaperFactory.createWallPaper(imageReader, windowDimensions);
 
         // Creating ball
-        ballFactory.createBall(windowDimensions, imageReader, soundReader);
+        ballFactory.createBall(windowDimensions.mult(FACTOR_OF_HALF), Ball.BALL_RADIUS,
+                createRandomVelocity(BALL_SPEED), Ball.BALL_PICTURE_PATH, Ball.CLASH_SOUND_PATH, Ball.BALL_NAME);
 
         // Creating user paddles
         paddleFactory.createPaddle(inputListener, windowDimensions, imageReader);
 
         // Creating borders
-        bordersFactory.createBorder(windowDimensions);
+        bordersFactory.createBorder(windowDimensions, BordersFactory.BORDR_NAME);
 
         // Creating WallOfBricks
-        wallOfBricks.createWallOfBricks(windowDimensions, imageReader, numOfRows, numOfBricksInRow);
+        wallOfBricks.createWallOfBricks(windowDimensions, imageReader, numOfRows, numOfBricksInRow,
+                Brick.BRICK_NAME);
 
         // Creating GraphicHearts
         graphicHeartFactory.createGraphicHearts(imageReader, windowDimensions, numOfHeartsRemain);
@@ -134,13 +142,16 @@ public class BrickerGameManager extends GameManager {
      */
     public void removeBrick(GameObject brick) {
         System.out.println(BRICK_COLLISION_MESSAGE);
-        gameObjects().removeGameObject(brick,Layer.STATIC_OBJECTS);
+        boolean disappearFlag = gameObjects().removeGameObject(brick,Layer.STATIC_OBJECTS);
+        if (disappearFlag) {
+            increasebricksHitCounter();
+        }
     }
 
-    public Vector2 createRandomVelocity(){
+    public Vector2 createRandomVelocity(float ballSpeed){
         Random rand = new Random();
-        float ballVelX = BALL_SPEED;
-        float ballVelY = BALL_SPEED;
+        float ballVelX =  ballSpeed;
+        float ballVelY = ballSpeed;
         if(rand.nextBoolean()){
             ballVelX *= -1;
         }
@@ -172,11 +183,14 @@ public class BrickerGameManager extends GameManager {
             double objectHeight = gameObject.getCenter().y();
             if (objectHeight >= windowDimensions.y() - windowDimensions.mult(WALL_FACTOR).y()) {
                 switch (gameObject.getTag()) {
-                    case Ball.BALL_STRING:
+                    case Ball.BALL_NAME:
                         numOfHeartsRemain--;
                         removeOneHeart(); // check if last heart needs to be dissapired before pop window
-                        gameObject.setVelocity(createRandomVelocity());
                         gameObject.setCenter(windowDimensions.mult(FACTOR_OF_HALF));
+                        break;
+                    case ExtraBallCollisionStrategy.PUCK_BALL_NAME:
+                        gameObjects().removeGameObject(gameObject);
+                        break;
                 }
             }
         }
@@ -199,12 +213,13 @@ public class BrickerGameManager extends GameManager {
         checkForGameEnd();
     }
 
+
     private void checkForGameEnd() {
         String prompt = EMPTY_PROMPT;
         if (numOfHeartsRemain <= 0){
             prompt = LOSE_MESSAGE;
         }
-        if (bricksHitCounter == numOfBricksInRow*numOfRows || inputListener.isKeyPressed(KeyEvent.VK_W)){
+        if (bricksHitCounter == numOfBricksInRow * numOfRows || inputListener.isKeyPressed(KeyEvent.VK_W)) {
             prompt = WIN_MESSAGE;
         }
         if (!prompt.isEmpty()){
@@ -212,13 +227,12 @@ public class BrickerGameManager extends GameManager {
             if(windowController.openYesNoDialog(prompt)){
                 windowController.resetGame();
                 numOfHeartsRemain = DEFAULT_NUM_OF_LIVES;
+                bricksHitCounter = 0;
             }
             else{
                 windowController.closeWindow();
             }
-
         }
-
     }
 
     /**

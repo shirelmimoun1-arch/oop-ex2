@@ -4,7 +4,6 @@ import bricker.brick_strategies.*;
 import bricker.gameobjects.Brick;
 import bricker.main.BrickerGameManager;
 import danogl.GameManager;
-import danogl.GameObject;
 import danogl.collisions.Layer;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
@@ -19,28 +18,30 @@ public class WallOfBricksFactory {
     public static final float FACTOR_OF_Y_GAP = 0.02f;
     public static final float BRICK_HEIGHT = 15;
     private BrickerGameManager brickerGameManager;
+    float brickLength;
 
     public WallOfBricksFactory(GameManager brickerGameManager) {
         this.brickerGameManager = (BrickerGameManager)brickerGameManager;
     }
 
     public void createWallOfBricks(Vector2 windowDimensions, ImageReader imageReader, int numOfRows,
-                                   int numOfBricksInRow) {
+                                   int numOfBricksInRow, String nameOfBrick) {
         Renderable brickImage = imageReader.readImage(BRICK_PICTURE_PATH, false);
         float gapX = windowDimensions.x() * FACTOR_OF_X_GAP;
         float gapY = windowDimensions.y() * FACTOR_OF_Y_GAP;
-        float brickLength = (windowDimensions.x() - (numOfBricksInRow + 1) * gapX) / (numOfBricksInRow);
+        this.brickLength = (windowDimensions.x() - (numOfBricksInRow + 1) * gapX) / (numOfBricksInRow);
         float brickHeight = BRICK_HEIGHT;
         for (int i = 0; i < numOfRows; i++) {
             for (int j = 0; j < numOfBricksInRow; j++) {
                 float x = (j * (brickLength + gapX) ) + gapX;
                 float y = i * (gapY+brickHeight);
-                addASinglrBrick(new Vector2(x, y), new Vector2(brickLength, brickHeight), brickImage);
+                addASingleBrick(new Vector2(x, y), new Vector2(brickLength, brickHeight), brickImage, nameOfBrick);
             }
         }
     }
 
-    private void addASinglrBrick(Vector2 topLeftCorner, Vector2 dimensions, Renderable brickImage){
+    private void addASingleBrick(Vector2 topLeftCorner, Vector2 dimensions, Renderable brickImage,
+                                 String nameOfBrick){
         Random rand = new Random();
         CollisionStrategy collisionStrategy;
         int randomValue = rand.nextInt(10);
@@ -60,9 +61,11 @@ public class WallOfBricksFactory {
             collisionStrategy = new ExtraLifeCollisionStrategy(brickerGameManager);
         }
         else{
-            collisionStrategy = new DubbleBehaviorCollisionStrategy(brickerGameManager);
+            collisionStrategy = new ExtraBallCollisionStrategy(brickerGameManager);
         }
+//        collisionStrategy = new TurboCollisionStrategy(brickerGameManager);
         Brick brick = new Brick(topLeftCorner, dimensions, brickImage, collisionStrategy);
+        brick.setTag(nameOfBrick);
         brickerGameManager.addObjectsToTheList(brick, Layer.STATIC_OBJECTS);
     }
 }
