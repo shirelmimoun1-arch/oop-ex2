@@ -8,18 +8,28 @@ import danogl.util.Vector2;
 import bricker.main.BrickerGameManager;
 
 /**
- *
+ * Factory class for creating balls.
  */
 public class BallFactory {
     private final BrickerGameManager brickerGameManager;
 
     /**
-     *
+     * Constructor for the ball factory.
+     * @param brickerGameManager the game manager to add the balls to.
      */
     public BallFactory(BrickerGameManager brickerGameManager){
         this.brickerGameManager = brickerGameManager;
     }
 
+    /**
+     * Creates a ball.
+     * @param ballPosition the position of the ball.
+     * @param ballRadius the radius of the ball.
+     * @param ballSpeed the speed of the ball.
+     * @param ballPicturePath the path to the ball's picture.
+     * @param clashSound the path to the ball's clash sound.
+     * @param ballName the name of the ball.
+     */
     public void createBall(Vector2 ballPosition, float ballRadius, Vector2 ballSpeed,
                                  String ballPicturePath, String clashSound, String ballName){
         Renderable ballImage = brickerGameManager.imageReader.readImage(ballPicturePath, true);
@@ -28,47 +38,7 @@ public class BallFactory {
         GameObject ball = new Ball(Vector2.ZERO, ballDimensions, ballImage, collisionSound);
         ball.setCenter(ballPosition);
         ball.setTag(ballName);
-//        ball.setVelocity(Vector2.DOWN.mult(BrickerGameManager.BALL_SPEED));
         ball.setVelocity(ballSpeed);
         brickerGameManager.addObjectsToTheList(ball);
     }
 }
-//
-//package bricker.factories;
-//
-//import bricker.gameobjects.Ball;
-//import danogl.GameManager;
-//import danogl.GameObject;
-//import danogl.gui.ImageReader;
-//import danogl.gui.Sound;
-//import danogl.gui.SoundReader;
-//import danogl.gui.rendering.Renderable;
-//import danogl.util.Vector2;
-//import bricker.main.BrickerGameManager;
-//
-//import java.util.Random;
-//
-//
-//public class BallFactory {
-//    public static final String BALL_PICTURE_PATH = "assets/ball.png";
-//    public static final String CLASH_SOUND_PATH = "assets/blop.wav";
-//    public static final int BALL_RADIUS = 35;
-//    public static final int BALL_SPEED = 250;
-//    public static final float FACTOR_OF_HALF = 0.5f;
-//    private BrickerGameManager brickerGameManager;
-//
-//
-//    public BallFactory(GameManager brickerGameManager){
-//        this.brickerGameManager = (BrickerGameManager)brickerGameManager;
-//    }
-//
-//    public void createBall(Vector2 windowDimensions, ImageReader imageReader, SoundReader soundReader){
-//        Renderable ballImage = imageReader.readImage(BALL_PICTURE_PATH, true);
-//        Sound collisionSound = soundReader.readSound(CLASH_SOUND_PATH);
-//        GameObject ball = new Ball(Vector2.ZERO, new Vector2(BALL_RADIUS, BALL_RADIUS), ballImage, collisionSound);
-//        ball.setCenter(windowDimensions.mult(FACTOR_OF_HALF));
-//        ball.setVelocity(Vector2.DOWN.mult(BALL_SPEED)); // Vector2(0, 100)
-//        brickerGameManager.addObjectsToTheList(ball); // gets a private field of the father class that holds all the game objects
-//        ball.setVelocity(brickerGameManager.createRandomVelocity());
-//    }
-//}

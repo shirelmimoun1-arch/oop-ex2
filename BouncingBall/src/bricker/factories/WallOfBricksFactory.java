@@ -8,34 +8,55 @@ import danogl.collisions.Layer;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 import danogl.gui.ImageReader;
-
 import java.util.Random;
 
-
+/**
+ * This class is responsible for creating a wall of bricks in the game.
+ */
 public class WallOfBricksFactory {
-    public static final String BRICK_PICTURE_PATH = "assets/brick.png";
     public static final float FACTOR_OF_X_GAP = 0.01f;
     public static final float FACTOR_OF_Y_GAP = 0.02f;
     public static final float BRICK_HEIGHT = 15;
+    //public static final int LOTTERY_FACTOR = 10;
     private BrickerGameManager brickerGameManager;
-    float brickLength;
 
+    /**
+     * Constructor for the WallOfBricksFactory class.
+     * @param brickerGameManager The BrickerGameManager instance.
+     */
     public WallOfBricksFactory(GameManager brickerGameManager) {
         this.brickerGameManager = (BrickerGameManager)brickerGameManager;
     }
 
-    public void createWallOfBricks(Vector2 windowDimensions, ImageReader imageReader, int numOfRows,
-                                   int numOfBricksInRow, String nameOfBrick) {
-        Renderable brickImage = imageReader.readImage(BRICK_PICTURE_PATH, false);
+
+    /**
+     * Creates a wall of bricks in the game.
+     * @param windowDimensions The dimensions of the game window.
+     * @param imageReader The ImageReader instance used to read brick images.
+     * @param numOfRows The number of rows of bricks.
+     * @param numOfBricksInRow The number of bricks in each row.
+     * @param nameOfBrick The name of the brick.
+     * @param imagePath The path to the brick image.
+     */
+    public void createWallOfBricks(Vector2 windowDimensions,
+                                   ImageReader imageReader,
+                                   int numOfRows,
+                                   int numOfBricksInRow,
+                                   String nameOfBrick,String imagePath) {
+        Renderable brickImage = imageReader.readImage(imagePath, false);
         float gapX = windowDimensions.x() * FACTOR_OF_X_GAP;
         float gapY = windowDimensions.y() * FACTOR_OF_Y_GAP;
-        this.brickLength = (windowDimensions.x() - (numOfBricksInRow + 1) * gapX) / (numOfBricksInRow);
+        float brickLength = (windowDimensions.x() - (numOfBricksInRow + 1) * gapX) / (numOfBricksInRow);
         float brickHeight = BRICK_HEIGHT;
         for (int i = 0; i < numOfRows; i++) {
             for (int j = 0; j < numOfBricksInRow; j++) {
                 float x = (j * (brickLength + gapX) ) + gapX;
                 float y = i * (gapY+brickHeight);
-                addASingleBrick(new Vector2(x, y), new Vector2(brickLength, brickHeight), brickImage, nameOfBrick);
+                addASingleBrick(
+                        new Vector2(x, y),
+                        new Vector2(brickLength, brickHeight),
+                        brickImage,
+                        nameOfBrick);
             }
         }
     }
@@ -44,6 +65,7 @@ public class WallOfBricksFactory {
                                  String nameOfBrick){
         Random rand = new Random();
         CollisionStrategy collisionStrategy;
+
         int randomValue = rand.nextInt(10);
         if (randomValue < 5) {
             collisionStrategy = new BasicCollisionStrategy(brickerGameManager);
@@ -61,9 +83,8 @@ public class WallOfBricksFactory {
             collisionStrategy = new ExtraLifeCollisionStrategy(brickerGameManager);
         }
         else{
-            collisionStrategy = new ExtraBallCollisionStrategy(brickerGameManager);
+            collisionStrategy = new DubbleBehaviorCollisionStrategy(brickerGameManager);
         }
-//        collisionStrategy = new TurboCollisionStrategy(brickerGameManager);
         Brick brick = new Brick(topLeftCorner, dimensions, brickImage, collisionStrategy);
         brick.setTag(nameOfBrick);
         brickerGameManager.addObjectsToTheList(brick, Layer.STATIC_OBJECTS);

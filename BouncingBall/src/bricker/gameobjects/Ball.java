@@ -1,5 +1,6 @@
 package bricker.gameobjects;
 import bricker.brick_strategies.TurboCollisionStrategy;
+import bricker.main.BrickerGameManager;
 import danogl.GameObject;
 import danogl.collisions.Collision;
 import danogl.gui.Sound;
@@ -15,6 +16,8 @@ public class Ball extends GameObject {
     public static final float BALL_RADIUS = 35;
     public static final int BALL_SPEED = 200;
     public static final String BALL_NAME = "Ball";
+    public static final String PUCK_BALL_NAME = "Puck Ball";
+
     private final Renderable renderable;
     private Sound collisionSound;
     private int collisionCounter;
@@ -50,6 +53,9 @@ public class Ball extends GameObject {
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
+        if (other.getTag().equals(GraphicHeart.GRAPHIC_HEART_STRING)) {
+            return;
+        }
         Vector2 newVelocity = getVelocity().flipped(collision.getNormal()); // the ball collision with paddle
         setVelocity(newVelocity);
         collisionSound.play();
@@ -63,13 +69,17 @@ public class Ball extends GameObject {
         }
     }
 
+    /**
+     * Sets the turbo mode of the ball.
+     * @param inTurboMode A boolean that indicates whether the ball is in turbo mode.
+     */
     public void setTurboMode(boolean inTurboMode ) {
         this.inTurboMode = inTurboMode;
     }
 
     private void resetBall() {
         setTurboMode(false);
-        setVelocity(getVelocity().mult(0.5f));
+        setVelocity(getVelocity().mult(BrickerGameManager.FACTOR_OF_HALF));
         renderer().setRenderable(renderable);
     }
 

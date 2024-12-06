@@ -12,10 +12,19 @@ public class TurboCollisionStrategy implements CollisionStrategy {
     public static final int VELOCITY_MULTIPLICATION_FACTOR = 2;
     private BrickerGameManager brickerGameManager;
 
+    /**
+     * Constructor for TurboCollisionStrategy.
+     * @param brickerGameManager The BrickerGameManager.
+     */
     public TurboCollisionStrategy(GameManager brickerGameManager) {
         this.brickerGameManager = (BrickerGameManager)brickerGameManager;
     }
 
+    /**
+     * Handles the collision between a brick using this strategy and the ball.
+     * @param object1 brick GameObject.
+     * @param object2 ball GameObject.
+     */
     @Override
     public void onCollision(GameObject object1, GameObject object2) {
         if (object2.getTag().equals(Ball.BALL_NAME)){
@@ -30,5 +39,3 @@ public class TurboCollisionStrategy implements CollisionStrategy {
         brickerGameManager.removeBrick(object1);
     }
 }
-
-// TODO: manage the reset of the ball after 6 collisions from the apropriate place

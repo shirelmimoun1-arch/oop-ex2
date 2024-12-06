@@ -7,7 +7,6 @@ import danogl.GameManager;
 import danogl.GameObject;
 import danogl.collisions.Layer;
 import danogl.gui.*;
-import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 import java.awt.event.KeyEvent;
 import java.util.Random;
@@ -18,28 +17,34 @@ import java.util.Random;
  * collisions, user inputs, game state transitions, and rendering.
  */
 public class BrickerGameManager extends GameManager {
+    public static final int NUM_OF_ARGS = 2;
+    public static final float WINDOW_WIDTH = 700;
+    public static final float WINDOW_HEIGHT = 500;
     public static final int DEFAULT_ROWS = 7;
     public static final int NUM_OF_BRICK = 8;
     public static final int BALL_SPEED = 200;
     public static final float WALL_FACTOR = 0.001f;
+    public static final float FACTOR_OF_HALF = 0.5f;
+    public static final int DEFAULT_NUM_OF_LIVES = 3;
+    public static final int MAX_NUM_OF_HEARTS = 4;
+    public static final int TARGET_FRAME_RATE = 100;
+    public static final String BRICK_PICTURE_PATH = "assets/brick.png";
+    public static final String HEART_PICTURE_PATH = "assets/heart.png";
     public static final String WINDOW_TITLE = "Bricker Game";
     public static final String BRICK_COLLISION_MESSAGE = "collision with brick detected";
     public static final String EMPTY_PROMPT = "";
     public static final String LOSE_MESSAGE = "You Lose!";
     public static final String WIN_MESSAGE = "You Win!";
     public static final String ASK_TO_PLAY_AGAIN_MESSAGE = " Play again?";
-    public static final float FACTOR_OF_HALF = 0.5f;
-    public static final int DEFAULT_NUM_OF_LIVES = 3;
     private  int numOfBricksInRow;
     private int numOfRows;
+    public int numOfHeartsRemain;
+    private int bricksHitCounter ;
     public ImageReader imageReader;
     public SoundReader soundReader;
     private WindowController windowController;
-    private Vector2 windowDimensions;
-    private int numOfHeartsRemain;
-    private int bricksHitCounter ;
-    private UserInputListener inputListener;
-
+    public Vector2 windowDimensions;
+    public UserInputListener inputListener;
     private BallFactory ballFactory;
     private PaddleFactory paddleFactory;
     private WallOfBricksFactory wallOfBricks;
@@ -85,54 +90,82 @@ public class BrickerGameManager extends GameManager {
     @Override
     public void initializeGame(ImageReader imageReader, SoundReader soundReader,
                                UserInputListener inputListener, WindowController windowController) {
+        super.initializeGame(imageReader, soundReader, inputListener, windowController);
         this.imageReader = imageReader;
         this.soundReader = soundReader;
+        this.windowDimensions = windowController.getWindowDimensions();
         this.windowController = windowController;
         this.inputListener = inputListener;
-        windowController.setTargetFramerate(100); // because it sent this error: Warning: your frames are
+        windowController.setTargetFramerate(TARGET_FRAME_RATE);
+        // because it sent this error: Warning: your frames are
         // taking too long to update, which means the target frame-rate (120) cannot be reached. If your
         // frame-rate is low, then either your update pass is taking too long (too many objects? an overly
         // complex logic?), or the target frame-rate is set too high for the hardware.
-
-        super.initializeGame(imageReader, soundReader, inputListener, windowController);
-        this.windowDimensions = windowController.getWindowDimensions();
 
         // Creating wallpaper
         wallPaperFactory.createWallPaper(imageReader, windowDimensions);
 
         // Creating ball
         ballFactory.createBall(windowDimensions.mult(FACTOR_OF_HALF), Ball.BALL_RADIUS,
-                createRandomVelocity(BALL_SPEED), Ball.BALL_PICTURE_PATH, Ball.CLASH_SOUND_PATH, Ball.BALL_NAME);
+                createRandomVelocity(BALL_SPEED), Ball.BALL_PICTURE_PATH,
+                Ball.CLASH_SOUND_PATH, Ball.BALL_NAME);
 
         // Creating user paddles
-        paddleFactory.createPaddle(inputListener, windowDimensions, imageReader);
+        Vector2 startingPlacePaddle = new Vector2(
+                windowDimensions.mult(FACTOR_OF_HALF).x(),
+                windowDimensions.y()-Paddle.PADDLE_GAP_FROM_BUTTOM_WINDOW);
+        paddleFactory.createPaddle(Paddle.PADDLE_PICTURE_PATH,startingPlacePaddle,
+                Paddle.PADDLE_HEIGHT,Paddle.PADDLE_WIDTH,Paddle.PADDLE_NAME);
 
         // Creating borders
-        bordersFactory.createBorder(windowDimensions, BordersFactory.BORDR_NAME);
+        bordersFactory.createBorder(windowDimensions, BordersFactory.BORDER_NAME);
 
         // Creating WallOfBricks
         wallOfBricks.createWallOfBricks(windowDimensions, imageReader, numOfRows, numOfBricksInRow,
-                Brick.BRICK_NAME);
-
+                Brick.BRICK_NAME, BRICK_PICTURE_PATH);
         // Creating GraphicHearts
-        graphicHeartFactory.createGraphicHearts(imageReader, windowDimensions, numOfHeartsRemain);
-
+        for (int i = 0; i < numOfHeartsRemain; i++) {
+            Vector2 setPlace = new Vector2
+                    (GraphicHeart.HEART_SIZE * (i + 1),
+                    windowDimensions.y() - GraphicHeart.GRAPHIC_HEART_GAP_FROM_BUTTOM_WINDOW);
+            graphicHeartFactory.createGraphicHearts(HEART_PICTURE_PATH, setPlace,
+                    Layer.UI,GraphicHeart.GRAPHIC_HEART_STRING);
+        }
         // Creating NumericalHearts
-        numericHeartFactory.createNumericalHearts(windowDimensions);
+        numericHeartFactory.createNumericalHearts(windowDimensions,DEFAULT_NUM_OF_LIVES,NumericalHeart.NUMERICAL_HEART_STRING);
     }
 
+    /**
+     * Adds a game object to the game's list of objects.
+     * @param gameObject The game object to be added.
+     */
     public void addObjectsToTheList(GameObject gameObject) {
         gameObjects().addGameObject(gameObject);
     }
 
+    /**
+     * Adds a game object to the game's list of objects, specifying the layer.
+     * @param gameObject The game object to be added.
+     * @param layer The layer to which the game object should be added.
+     */
     public void addObjectsToTheList(GameObject gameObject, int layer) {
         gameObjects().addGameObject(gameObject, layer);
     }
 
     /**
+     * Removes a game object from the game's list of objects unless bricks.
+     * @param gameObject The game object to be removed.
+     */
+    public void removeGameObject(GameObject gameObject) {
+        if (gameObject != null) {
+            gameObjects().removeGameObject(gameObject);
+        }
+    }
+
+    /**
      * Increments the number of bricks hit in the game.
      */
-    public void increasebricksHitCounter(){
+    public void increaseBricksHitCounter(){
         bricksHitCounter++;
     }
 
@@ -144,10 +177,15 @@ public class BrickerGameManager extends GameManager {
         System.out.println(BRICK_COLLISION_MESSAGE);
         boolean disappearFlag = gameObjects().removeGameObject(brick,Layer.STATIC_OBJECTS);
         if (disappearFlag) {
-            increasebricksHitCounter();
+            increaseBricksHitCounter();
         }
     }
 
+    /**
+     * Creates a random velocity vector for the ball.
+     * @param ballSpeed The speed of the ball.
+     * @return A Vector2 object representing the random velocity.
+     */
     public Vector2 createRandomVelocity(float ballSpeed){
         Random rand = new Random();
         float ballVelX =  ballSpeed;
@@ -161,19 +199,46 @@ public class BrickerGameManager extends GameManager {
         return new Vector2(ballVelX, ballVelY);
     }
 
-    private void removeOneHeart(){
-        boolean graficHeartFlag = false;
-        boolean numericHeartFlag = false;
+
+    private void decreaseLives(){
+        boolean graphicHeartFlag = false;
+        boolean numericalHeartFlag = false;
         for (GameObject gameObject : gameObjects().objectsInLayer(Layer.UI)) {
             String curTag = gameObject.getTag();
-            if (curTag.equals(GraphicHeart.GRAPHIC_HEART_STRING) && !graficHeartFlag){
-                gameObjects().removeGameObject(gameObject, Layer.UI);
-                graficHeartFlag = true;
+            if (curTag.equals(GraphicHeart.GRAPHIC_HEART_STRING) && !graphicHeartFlag){
+                //remove the last heart from the list
+                if (gameObject.getCenter().x() == (numOfHeartsRemain+1)*GraphicHeart.HEART_SIZE) {
+                    gameObjects().removeGameObject(gameObject, Layer.UI);
+                    graphicHeartFlag = true;
+                }
             }
-            else if(curTag.equals(NumericalHeart.NUMERICAL_HEART_STRING) && !numericHeartFlag){
+            if(curTag.equals(NumericalHeart.NUMERICAL_HEART_STRING) && !numericalHeartFlag){
+                System.out.println(true);
                 NumericalHeart numericHeart = (NumericalHeart) gameObject;
                 numericHeart.UpdateNumericalHeart(numOfHeartsRemain);
-                numericHeartFlag = true;
+                numericalHeartFlag = true;
+            }
+        }
+        System.out.println(numOfHeartsRemain);
+    }
+
+    /**
+     * Increases the number of lives (hearts) in the game by one.
+     */
+    public void increaseLives() {
+        if (numOfHeartsRemain < MAX_NUM_OF_HEARTS) {
+            numOfHeartsRemain++;
+            System.out.println(numOfHeartsRemain);
+            Vector2 setPlace = (new Vector2(GraphicHeart.HEART_SIZE * (numOfHeartsRemain),
+                    windowDimensions.y() - GraphicHeart.GRAPHIC_HEART_GAP_FROM_BUTTOM_WINDOW));
+            graphicHeartFactory.createGraphicHearts(HEART_PICTURE_PATH, setPlace,
+                    Layer.UI,GraphicHeart.GRAPHIC_HEART_STRING);
+            for (GameObject gameObject : gameObjects().objectsInLayer(Layer.UI)) {
+                String curTag = gameObject.getTag();
+                if (curTag.equals(NumericalHeart.NUMERICAL_HEART_STRING)) {
+                    NumericalHeart numericHeart = (NumericalHeart) gameObject;
+                    numericHeart.UpdateNumericalHeart(numOfHeartsRemain);
+                }
             }
         }
     }
@@ -185,10 +250,11 @@ public class BrickerGameManager extends GameManager {
                 switch (gameObject.getTag()) {
                     case Ball.BALL_NAME:
                         numOfHeartsRemain--;
-                        removeOneHeart(); // check if last heart needs to be dissapired before pop window
+                        decreaseLives();
                         gameObject.setCenter(windowDimensions.mult(FACTOR_OF_HALF));
                         break;
-                    case ExtraBallCollisionStrategy.PUCK_BALL_NAME:
+
+                    case ExtraBallCollisionStrategy.PUCK_BALL_NAME, GraphicHeart.FALLING_HEART_STRING:
                         gameObjects().removeGameObject(gameObject);
                         break;
                 }
@@ -200,11 +266,7 @@ public class BrickerGameManager extends GameManager {
      * Updates the game current state based on the objects. Checks if the game end and prompts a message
      * accordingly.
      * @param deltaTime The time, in seconds, that passed since the last invocation
-     *                  of this method (i.e., since the last frame). This is useful
-     *                  for either accumulating the total time that passed since some
-     *                  event, or for physics integration (i.e., multiply this by
-     *                  the acceleration to get an estimate of the added velocity or
-     *                  by the velocity to get an estimate of the difference in position).
+     *                  of this method (i.e., since the last frame).
      */
     @Override
     public void update(float deltaTime) {
@@ -241,7 +303,7 @@ public class BrickerGameManager extends GameManager {
      */
     public static void main(String[] args) {
         int numOfRows, numOfBricksInRow;
-        if (args.length == 2) {
+        if (args.length == NUM_OF_ARGS) {
             numOfBricksInRow =  Integer.parseInt(args[0]);
             numOfRows =  Integer.parseInt(args[1]);
         } else {
@@ -249,8 +311,7 @@ public class BrickerGameManager extends GameManager {
             numOfBricksInRow = NUM_OF_BRICK;
         }
         BrickerGameManager window = new BrickerGameManager(WINDOW_TITLE,
-                new Vector2(700, 500), numOfRows, numOfBricksInRow);
-
+                new Vector2(WINDOW_WIDTH, WINDOW_HEIGHT), numOfRows, numOfBricksInRow);
         window.run();
     }
 }
@@ -265,3 +326,4 @@ public class BrickerGameManager extends GameManager {
 // 3) check if the arguments are always valid or it needs to br checked V
 // 4) explain why we added UpdateNumericalHeart in numerical heart class
 // 5) should I, and how to create an object game factory
+// 6) should we add lottery factor in wall of bricks factory?

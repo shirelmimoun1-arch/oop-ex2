@@ -16,6 +16,7 @@ import java.util.Random;
 public class ExtraBallCollisionStrategy implements CollisionStrategy {
     public static final String PUCK_BALL_PATH = "assets/mockBall.png";
     public static final String PUCK_BALL_NAME = "Puck Ball";
+    public static final float PUCK_BALL_SIZE_FACTOR = 0.75f;
     public static final int NUM_OF_PUCK_BALL_ADDED = 2;
     private BrickerGameManager brickerGameManager;
 
@@ -28,9 +29,9 @@ public class ExtraBallCollisionStrategy implements CollisionStrategy {
     }
 
     /**
-     * Handles the collision between a brick using this strategy and another game object (typically a ball).
-     * @param object1 The first object involved in the collision (usually the brick).
-     * @param object2 The second object involved in the collision (usually the ball).
+     * Handles the collision between a brick using this strategy and the ball.
+     * @param object1 brick GameObject.
+     * @param object2 ball GameObject.
      */
     @Override
     public void onCollision(GameObject object1, GameObject object2) {
@@ -38,7 +39,7 @@ public class ExtraBallCollisionStrategy implements CollisionStrategy {
         Vector2 puckBallPosition = object1.getCenter();
         for (int i = 0; i < NUM_OF_PUCK_BALL_ADDED; i++) {
             ballFactory.createBall(puckBallPosition,
-                    Ball.BALL_RADIUS * (0.75f), createPuckBallVelocity(),
+                    Ball.BALL_RADIUS * (PUCK_BALL_SIZE_FACTOR), createPuckBallVelocity(),
                     PUCK_BALL_PATH, Ball.CLASH_SOUND_PATH, PUCK_BALL_NAME);
         }
         brickerGameManager.removeBrick(object1);

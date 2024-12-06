@@ -12,6 +12,7 @@ import java.awt.*;
 public class NumericalHeart extends GameObject {
     public static final String NUMERICAL_HEART_STRING = "Numerical Heart";
     public static final String NUMERICAL_HEART_TEXT = "Lives: ";
+    public static final int GAP_FROM_BUTTOM_WINDOW = 80;
     private final TextRenderable renderable;
 
     /**
@@ -26,16 +27,10 @@ public class NumericalHeart extends GameObject {
     public NumericalHeart(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable) {
         super(topLeftCorner, dimensions, renderable);
         this.renderable = (TextRenderable) renderable;
+
     }
 
-    /**
-     * A getter for the tag name of the NumericalHeart.
-     * @return A string that represents the name tag of the NumericalHeart.
-     */
-    @Override
-    public String getTag() {
-        return super.getTag() + NUMERICAL_HEART_STRING;
-    }
+
 
     /**
      * Updates the numerical hearts color and text renderer when the player looses a life in the game.
@@ -65,5 +60,3 @@ public class NumericalHeart extends GameObject {
         }
     }
 }
-
-
