@@ -8,7 +8,7 @@ import danogl.util.Vector2;
 import bricker.main.BrickerGameManager;
 
 /**
- * Factory class for creating balls.
+ * This class is responsible for creating the Ball game object.
  */
 public class BallFactory {
     private final BrickerGameManager brickerGameManager;

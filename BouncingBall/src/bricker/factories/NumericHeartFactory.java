@@ -11,6 +11,9 @@ import danogl.util.Vector2;
 
 import java.awt.*;
 
+/**
+ * This class is responsible for creating the Numerical Heart game object.
+ */
 public class NumericHeartFactory {
     public static final Color INITIAL_COLOR = Color.GREEN;
 

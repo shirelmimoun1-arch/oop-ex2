@@ -9,7 +9,7 @@ import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
 /**
- * This class is responsible for the Paddle game object.
+ * This class is responsible for creating the Paddle game object.
  */
 public class PaddleFactory {
     private BrickerGameManager brickerGameManager;

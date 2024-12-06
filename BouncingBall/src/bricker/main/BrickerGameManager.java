@@ -1,14 +1,12 @@
 package bricker.main;
 
 import bricker.brick_strategies.ExtraBallCollisionStrategy;
-import bricker.brick_strategies.TurboCollisionStrategy;
 import bricker.factories.*;
 import bricker.gameobjects.*;
 import danogl.GameManager;
 import danogl.GameObject;
 import danogl.collisions.Layer;
 import danogl.gui.*;
-import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 import java.awt.event.KeyEvent;
 import java.util.Random;
@@ -19,7 +17,7 @@ import java.util.Random;
  * collisions, user inputs, game state transitions, and rendering.
  */
 public class BrickerGameManager extends GameManager {
-    public static final int NUM_OF_ARGS = 2;
+    public static final int NUM_OF_ARGUMENTS = 2;
     public static final float WINDOW_WIDTH = 700;
     public static final float WINDOW_HEIGHT = 500;
     public static final int DEFAULT_ROWS = 7;
@@ -33,7 +31,7 @@ public class BrickerGameManager extends GameManager {
     public static final String BRICK_PICTURE_PATH = "assets/brick.png";
     public static final String HEART_PICTURE_PATH = "assets/heart.png";
     public static final String WINDOW_TITLE = "Bricker Game";
-    public static final String BRICK_COLLISION_MESSAGE = "collision with brick detected";
+    public static final String BRICK_COLLISION_MESSAGE = "Collision with brick detected";
     public static final String EMPTY_PROMPT = "";
     public static final String LOSE_MESSAGE = "You Lose!";
     public static final String WIN_MESSAGE = "You Win!";
@@ -131,7 +129,7 @@ public class BrickerGameManager extends GameManager {
                     (GraphicHeart.HEART_SIZE * (i + 1),
                     windowDimensions.y() - GraphicHeart.GRAPHIC_HEART_GAP_FROM_BUTTOM_WINDOW);
             graphicHeartFactory.createGraphicHearts(HEART_PICTURE_PATH, setPlace,
-                    Layer.UI,GraphicHeart.GRAPHIC_HEART_STRING);
+                    Layer.UI,GraphicHeart.GRAPHIC_HEART_STRING, Vector2.ZERO);
         }
         // Creating NumericalHearts
         numericHeartFactory.createNumericalHearts(windowDimensions,DEFAULT_NUM_OF_LIVES,NumericalHeart.NUMERICAL_HEART_STRING);
@@ -232,7 +230,7 @@ public class BrickerGameManager extends GameManager {
             Vector2 setPlace = (new Vector2(GraphicHeart.HEART_SIZE * (numOfHeartsRemain),
                     windowDimensions.y() - GraphicHeart.GRAPHIC_HEART_GAP_FROM_BUTTOM_WINDOW));
             graphicHeartFactory.createGraphicHearts(HEART_PICTURE_PATH, setPlace,
-                    Layer.UI,GraphicHeart.GRAPHIC_HEART_STRING);
+                    Layer.UI,GraphicHeart.GRAPHIC_HEART_STRING, Vector2.ZERO);
             for (GameObject gameObject : gameObjects().objectsInLayer(Layer.UI)) {
                 String curTag = gameObject.getTag();
                 if (curTag.equals(NumericalHeart.NUMERICAL_HEART_STRING)) {
@@ -304,7 +302,7 @@ public class BrickerGameManager extends GameManager {
      */
     public static void main(String[] args) {
         int numOfRows, numOfBricksInRow;
-        if (args.length == NUM_OF_ARGS) {
+        if (args.length == NUM_OF_ARGUMENTS) {
             numOfBricksInRow =  Integer.parseInt(args[0]);
             numOfRows =  Integer.parseInt(args[1]);
         } else {
@@ -328,3 +326,10 @@ public class BrickerGameManager extends GameManager {
 // 4) explain why we added UpdateNumericalHeart in numerical heart class
 // 5) should I, and how to create an object game factory
 // 6) should we add lottery factor in wall of bricks factory?
+// 7) is it bad practice?
+//        this.imageReader = imageReader;
+//        this.soundReader = soundReader;
+//        this.windowDimensions = windowController.getWindowDimensions();
+//        this.windowController = windowController;
+//        this.inputListener = inputListener;
+// 8) should we enter a velocity to graphic heart creation func?

@@ -7,7 +7,7 @@ import danogl.collisions.Layer;
 import danogl.util.Vector2;
 
 /**
- * Factory class for creating borders of the game.
+ * This class is responsible for creating the Borders of the window.
  */
 public class BordersFactory {
     public static final float WALL_FACTOR = 0.001f;
@@ -18,7 +18,6 @@ public class BordersFactory {
      * Constructor for BordersFactory.
      * @param brickerGameManager The BrickerGameManager instance.
      */
-
     public BordersFactory(GameManager brickerGameManager) {
         this.brickerGameManager = (BrickerGameManager)brickerGameManager;
     }
@@ -27,7 +26,6 @@ public class BordersFactory {
      * Creates borders for the game.
      * @param windowDimensions The dimensions of the game window.
      */
-
     public void createBorder(Vector2 windowDimensions, String borderNmae) {
         Vector2 topLeftOfUpperAndLeftWall = Vector2.ZERO;
         Vector2 topLeftOfDownWall = new Vector2(0, windowDimensions.y());

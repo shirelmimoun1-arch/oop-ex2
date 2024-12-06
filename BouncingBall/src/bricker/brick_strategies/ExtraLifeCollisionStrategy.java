@@ -31,19 +31,14 @@ public class ExtraLifeCollisionStrategy implements CollisionStrategy {
      */
     @Override
     public void onCollision(GameObject object1, GameObject object2) {
-        Vector2 brickPosition = object1.getCenter();
-        GraphicHeart fallingHeart = createFallingHeart(brickPosition);
-        Vector2 velocity = new Vector2(0, FALLING_HEART_Y_VELOCITY);
-        fallingHeart.setVelocity(velocity);
-        brickerGameManager.removeGameObject(object1);
-    }
-
-    private GraphicHeart createFallingHeart(Vector2 brickPosition) {
-        GameObject heart = graphicHeartFactory.createGraphicHearts(
+        Vector2 graphicHeartPosition = object1.getCenter();
+        Vector2 graphicHeartVelocity = new Vector2(0, FALLING_HEART_Y_VELOCITY);
+        graphicHeartFactory.createGraphicHearts(
                 BrickerGameManager.HEART_PICTURE_PATH,
-                brickPosition,
-                Layer.DEFAULT,GraphicHeart.FALLING_HEART_STRING);
-        return (GraphicHeart) heart;
+                graphicHeartPosition,
+                Layer.DEFAULT,GraphicHeart.FALLING_HEART_STRING,
+                graphicHeartVelocity);
+        brickerGameManager.removeGameObject(object1);
     }
 }
 

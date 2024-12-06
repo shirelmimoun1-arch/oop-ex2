@@ -87,7 +87,7 @@ public class WallOfBricksFactory {
             collisionStrategy = new DubbleBehaviorCollisionStrategy(brickerGameManager);
             nameOfBrick = Brick.DUBBLE_BRICK_NAME;
         }
-        collisionStrategy = new TurboCollisionStrategy(brickerGameManager);
+//        collisionStrategy = new TurboCollisionStrategy(brickerGameManager);
         Brick brick = new Brick(topLeftCorner, dimensions, brickImage, collisionStrategy);
         brick.setTag(nameOfBrick);
         brickerGameManager.addObjectsToTheList(brick, Layer.STATIC_OBJECTS);

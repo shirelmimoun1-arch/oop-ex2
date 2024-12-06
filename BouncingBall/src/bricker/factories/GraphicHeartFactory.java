@@ -7,6 +7,9 @@ import danogl.GameObject;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
+/**
+ * This class is responsible for creating the Graphic Heart game object.
+ */
 public class GraphicHeartFactory {
     private final BrickerGameManager brickerGameManager;
 
@@ -24,21 +27,21 @@ public class GraphicHeartFactory {
      * @param setPlace The position of the heart object.
      * @param layer The layer on which the heart object will be rendered.
      * @param graphicHeartName The tag for the heart object.
-     * @return The created heart object.
+     * @param velocity The velocity of the heart object.
      */
-
-    public GameObject createGraphicHearts(String pathImage,
-                                          Vector2 setPlace,
-                                          int layer,
-                                          String graphicHeartName) {
+    public void createGraphicHearts(String pathImage,
+                                    Vector2 setPlace,
+                                    int layer,
+                                    String graphicHeartName,
+                                    Vector2 velocity) {
         Renderable heartImage = brickerGameManager.imageReader.readImage(pathImage, true);
         GameObject heart = new GraphicHeart(
                 Vector2.ZERO,
                 new Vector2(GraphicHeart.HEART_SIZE, GraphicHeart.HEART_SIZE),
                 heartImage, brickerGameManager);
         heart.setCenter(setPlace);
+        heart.setVelocity(velocity);
         heart.setTag(graphicHeartName);
         brickerGameManager.addObjectsToTheList(heart, layer);
-        return heart;
     }
 }
