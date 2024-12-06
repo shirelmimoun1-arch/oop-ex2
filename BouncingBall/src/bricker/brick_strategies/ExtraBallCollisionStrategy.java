@@ -42,7 +42,7 @@ public class ExtraBallCollisionStrategy implements CollisionStrategy {
                     Ball.BALL_RADIUS * (PUCK_BALL_SIZE_FACTOR), createPuckBallVelocity(),
                     PUCK_BALL_PATH, Ball.CLASH_SOUND_PATH, PUCK_BALL_NAME);
         }
-        brickerGameManager.removeBrick(object1);
+        brickerGameManager.removeGameObject(object1);
     }
 
     private Vector2 createPuckBallVelocity(){

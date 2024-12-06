@@ -12,6 +12,7 @@ import danogl.util.Vector2;
  */
 public class Ball extends GameObject {
     public static final String BALL_PICTURE_PATH = "assets/ball.png";
+    public static final String RED_BALL_PATH = "assets/redball.png";
     public static final String CLASH_SOUND_PATH = "assets/blop.wav";
     public static final float BALL_RADIUS = 35;
     public static final int BALL_SPEED = 200;
@@ -23,7 +24,7 @@ public class Ball extends GameObject {
     private int collisionCounter;
     // Flag that indicates that the ball is in turbo mode
     public boolean inTurboMode;
-    private int turboCollisions;
+    public int turboCollisions;
 
     /**
      * Construct a new Ball instance.
@@ -60,9 +61,9 @@ public class Ball extends GameObject {
         setVelocity(newVelocity);
         collisionSound.play();
         this.collisionCounter++;
-        if (inTurboMode) {
-            turboCollisions++;
-            if (turboCollisions >= TurboCollisionStrategy.NUM_OF_BALL_COLLISION_WITH_THE_CHANGE) {
+        if (this.inTurboMode){
+            this.turboCollisions++;
+            if (this.turboCollisions > TurboCollisionStrategy.MAX_NUM_OF_BALL_COLLISIONS_IN_TURBO_MODE) {
                 resetBall();
                 turboCollisions = 0;
             }

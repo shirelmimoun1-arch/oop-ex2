@@ -35,14 +35,12 @@ public class WallOfBricksFactory {
      * @param imageReader The ImageReader instance used to read brick images.
      * @param numOfRows The number of rows of bricks.
      * @param numOfBricksInRow The number of bricks in each row.
-     * @param nameOfBrick The name of the brick.
      * @param imagePath The path to the brick image.
      */
     public void createWallOfBricks(Vector2 windowDimensions,
                                    ImageReader imageReader,
                                    int numOfRows,
-                                   int numOfBricksInRow,
-                                   String nameOfBrick,String imagePath) {
+                                   int numOfBricksInRow,String imagePath) {
         Renderable brickImage = imageReader.readImage(imagePath, false);
         float gapX = windowDimensions.x() * FACTOR_OF_X_GAP;
         float gapY = windowDimensions.y() * FACTOR_OF_Y_GAP;
@@ -55,36 +53,41 @@ public class WallOfBricksFactory {
                 addASingleBrick(
                         new Vector2(x, y),
                         new Vector2(brickLength, brickHeight),
-                        brickImage,
-                        nameOfBrick);
+                        brickImage);
             }
         }
     }
 
-    private void addASingleBrick(Vector2 topLeftCorner, Vector2 dimensions, Renderable brickImage,
-                                 String nameOfBrick){
+    private void addASingleBrick(Vector2 topLeftCorner, Vector2 dimensions, Renderable brickImage){
         Random rand = new Random();
         CollisionStrategy collisionStrategy;
-
+        String nameOfBrick;
         int randomValue = rand.nextInt(10);
         if (randomValue < 5) {
             collisionStrategy = new BasicCollisionStrategy(brickerGameManager);
+            nameOfBrick = Brick.BASIC_BRICK_NAME;
         }
         else if (randomValue == 5) {
             collisionStrategy = new ExtraBallCollisionStrategy(brickerGameManager);
+            nameOfBrick = Brick.EXTRA_BALL_BRICK_NAME;
         }
         else if(randomValue == 6){
             collisionStrategy = new ExtraPaddleCollisionStrategy(brickerGameManager);
+            nameOfBrick = Brick.EXTRA_PADDLE_BRICK_NAME;
         }
         else if (randomValue == 7){
             collisionStrategy = new TurboCollisionStrategy(brickerGameManager);
+            nameOfBrick = Brick.TURBO_BRICK_NAME;
         }
         else if (randomValue == 8){
             collisionStrategy = new ExtraLifeCollisionStrategy(brickerGameManager);
+            nameOfBrick = Brick.EXTRA_LIFE_BRICK_NAME;
         }
         else{
             collisionStrategy = new DubbleBehaviorCollisionStrategy(brickerGameManager);
+            nameOfBrick = Brick.DUBBLE_BRICK_NAME;
         }
+        collisionStrategy = new TurboCollisionStrategy(brickerGameManager);
         Brick brick = new Brick(topLeftCorner, dimensions, brickImage, collisionStrategy);
         brick.setTag(nameOfBrick);
         brickerGameManager.addObjectsToTheList(brick, Layer.STATIC_OBJECTS);

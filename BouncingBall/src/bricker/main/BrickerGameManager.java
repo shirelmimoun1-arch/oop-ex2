@@ -1,12 +1,14 @@
 package bricker.main;
 
 import bricker.brick_strategies.ExtraBallCollisionStrategy;
+import bricker.brick_strategies.TurboCollisionStrategy;
 import bricker.factories.*;
 import bricker.gameobjects.*;
 import danogl.GameManager;
 import danogl.GameObject;
 import danogl.collisions.Layer;
 import danogl.gui.*;
+import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 import java.awt.event.KeyEvent;
 import java.util.Random;
@@ -122,7 +124,7 @@ public class BrickerGameManager extends GameManager {
 
         // Creating WallOfBricks
         wallOfBricks.createWallOfBricks(windowDimensions, imageReader, numOfRows, numOfBricksInRow,
-                Brick.BRICK_NAME, BRICK_PICTURE_PATH);
+                BRICK_PICTURE_PATH);
         // Creating GraphicHearts
         for (int i = 0; i < numOfHeartsRemain; i++) {
             Vector2 setPlace = new Vector2
@@ -158,7 +160,16 @@ public class BrickerGameManager extends GameManager {
      */
     public void removeGameObject(GameObject gameObject) {
         if (gameObject != null) {
-            gameObjects().removeGameObject(gameObject);
+            if(gameObject.getTag().startsWith(Brick.BRICK_NAME)) {
+                System.out.println(BRICK_COLLISION_MESSAGE);
+                boolean disappearFlag = gameObjects().removeGameObject(gameObject, Layer.STATIC_OBJECTS);
+                if (disappearFlag) {
+                    increaseBricksHitCounter();
+                }
+            }
+            else {
+                gameObjects().removeGameObject(gameObject);
+            }
         }
     }
 
@@ -169,17 +180,6 @@ public class BrickerGameManager extends GameManager {
         bricksHitCounter++;
     }
 
-    /**
-     * Removes a brick from the game upon collision with the ball.
-     * @param brick The Brick object that is removed.
-     */
-    public void removeBrick(GameObject brick) {
-        System.out.println(BRICK_COLLISION_MESSAGE);
-        boolean disappearFlag = gameObjects().removeGameObject(brick,Layer.STATIC_OBJECTS);
-        if (disappearFlag) {
-            increaseBricksHitCounter();
-        }
-    }
 
     /**
      * Creates a random velocity vector for the ball.
@@ -213,13 +213,13 @@ public class BrickerGameManager extends GameManager {
                 }
             }
             if(curTag.equals(NumericalHeart.NUMERICAL_HEART_STRING) && !numericalHeartFlag){
-                System.out.println(true);
+//                System.out.println(true);
                 NumericalHeart numericHeart = (NumericalHeart) gameObject;
                 numericHeart.UpdateNumericalHeart(numOfHeartsRemain);
                 numericalHeartFlag = true;
             }
         }
-        System.out.println(numOfHeartsRemain);
+//        System.out.println(numOfHeartsRemain);
     }
 
     /**
@@ -228,7 +228,7 @@ public class BrickerGameManager extends GameManager {
     public void increaseLives() {
         if (numOfHeartsRemain < MAX_NUM_OF_HEARTS) {
             numOfHeartsRemain++;
-            System.out.println(numOfHeartsRemain);
+//            System.out.println(numOfHeartsRemain);
             Vector2 setPlace = (new Vector2(GraphicHeart.HEART_SIZE * (numOfHeartsRemain),
                     windowDimensions.y() - GraphicHeart.GRAPHIC_HEART_GAP_FROM_BUTTOM_WINDOW));
             graphicHeartFactory.createGraphicHearts(HEART_PICTURE_PATH, setPlace,
@@ -242,6 +242,7 @@ public class BrickerGameManager extends GameManager {
             }
         }
     }
+
 
     private void checkObjectExit() {
         for (GameObject gameObject : gameObjects().objectsInLayer(Layer.DEFAULT)) {

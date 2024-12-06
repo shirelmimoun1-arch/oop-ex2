@@ -37,7 +37,7 @@ public class ExtraPaddleCollisionStrategy implements CollisionStrategy {
         if (!extraPaddleExists) {
             createExtraPaddle();
         }
-        brickerGameManager.removeBrick(object1);
+        brickerGameManager.removeGameObject(object1);
     }
 
     private void createExtraPaddle() {

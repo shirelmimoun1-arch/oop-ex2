@@ -35,7 +35,7 @@ public class ExtraLifeCollisionStrategy implements CollisionStrategy {
         GraphicHeart fallingHeart = createFallingHeart(brickPosition);
         Vector2 velocity = new Vector2(0, FALLING_HEART_Y_VELOCITY);
         fallingHeart.setVelocity(velocity);
-        brickerGameManager.removeBrick(object1);
+        brickerGameManager.removeGameObject(object1);
     }
 
     private GraphicHeart createFallingHeart(Vector2 brickPosition) {
