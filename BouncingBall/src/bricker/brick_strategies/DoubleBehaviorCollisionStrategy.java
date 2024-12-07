@@ -10,12 +10,11 @@ import java.util.Random;
 /**
  * Strategy of double behavior of the brick.
  */
-public class DubbleBehaviorCollisionStrategy implements CollisionStrategy {
+public class DoubleBehaviorCollisionStrategy implements CollisionStrategy {
     public static final int NUM_OF_STRATEGIES_TO_ACTIVE = 2;
     private BrickerGameManager brickerGameManager;
     private StrategyFactory randStrategy;
-    private boolean activeDubbleBehaviorFlag = false;
-    private DubbleBehaviorCollisionStrategy dubbleBehaviorCollisionStrategy;
+    private DoubleBehaviorCollisionStrategy dubbleBehaviorCollisionStrategy;
     private ExtraBallCollisionStrategy extraBallCollisionStrategy;
     private ExtraLifeCollisionStrategy extraLifeCollisionStrategy;
     private ExtraPaddleCollisionStrategy extraPaddleCollisionStrategy;
@@ -27,7 +26,7 @@ public class DubbleBehaviorCollisionStrategy implements CollisionStrategy {
      * Constructor of DubbleBehaviorCollisionStrategy.
      * @param brickerGameManager A BrickerGameManager instance.
      */
-    public DubbleBehaviorCollisionStrategy(GameManager brickerGameManager){
+    public DoubleBehaviorCollisionStrategy(GameManager brickerGameManager){
         this.brickerGameManager = (BrickerGameManager)brickerGameManager;
         this.random = new Random();
         this.randStrategy = new StrategyFactory((BrickerGameManager)brickerGameManager);
@@ -40,33 +39,45 @@ public class DubbleBehaviorCollisionStrategy implements CollisionStrategy {
      */
     @Override
     public void onCollision(GameObject object1, GameObject object2) {
-        int randomInt1;
-        CollisionStrategy chosenStrategy1 = null;
-        if (!activeDubbleBehaviorFlag) {
-            randomInt1 = random.nextInt(5);
-            chosenStrategy1 = randStrategy.createStrategy(randomInt1);
+        boolean activeDubbleBehaviorFlag1 = false;
+        boolean activeDubbleBehaviorFlag2 = false;
+        int randomInt1 = random.nextInt(5);
+        if (randomInt1 == 4) {
+            activeDubbleBehaviorFlag1 = true;
         }
-        else {
-            randomInt1 = random.nextInt(4);
-            chosenStrategy1 = randStrategy.createStrategy(randomInt1);
-        }
+        CollisionStrategy chosenStrategy1 = randStrategy.createStrategy(randomInt1);
         CollisionStrategy chosenStrategy2 = null;
         int randomInt2;
         // if chosenStrategy1 is dubble behavior
-        if (randomInt1 == 4){
-            activeDubbleBehaviorFlag = true;
+        if (activeDubbleBehaviorFlag1){
             randomInt2 = random.nextInt(4);
             chosenStrategy2 = randStrategy.createStrategy(randomInt2);
         }
-        else if (!activeDubbleBehaviorFlag){
+        else {
             randomInt2 = random.nextInt(5);
             if(randomInt2 == 4){
-                activeDubbleBehaviorFlag = true;
+                activeDubbleBehaviorFlag2 = true;
             }
             chosenStrategy2 = randStrategy.createStrategy(randomInt2);
         }
-        chosenStrategy1.onCollision(object1, object2);
-        chosenStrategy2.onCollision(object1, object2);
+        if (activeDubbleBehaviorFlag1 || activeDubbleBehaviorFlag2){
+            int randomInt3 = random.nextInt(4);
+            CollisionStrategy chosenStrategy3 = randStrategy.createStrategy(randomInt3);
+            int randomInt4 = random.nextInt(4);
+            CollisionStrategy chosenStrategy4 = randStrategy.createStrategy(randomInt4);
+            chosenStrategy3.onCollision(object1, object2);
+            chosenStrategy4.onCollision(object1, object2);
+            if (activeDubbleBehaviorFlag1){
+                chosenStrategy2.onCollision(object1, object2);
+            }
+            else {
+                chosenStrategy1.onCollision(object1, object2);
+            }
+        }
+        else{
+            chosenStrategy1.onCollision(object1, object2);
+            chosenStrategy2.onCollision(object1, object2);
+        }
     }
 
 }

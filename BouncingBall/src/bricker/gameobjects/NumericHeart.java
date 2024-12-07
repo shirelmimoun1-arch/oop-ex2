@@ -9,7 +9,7 @@ import java.awt.*;
 /**
  * This class is responsible for the NumericalHeart game object.
  */
-public class NumericalHeart extends GameObject {
+public class NumericHeart extends GameObject {
     public static final String NUMERICAL_HEART_STRING = "Numerical Heart";
     public static final String NUMERICAL_HEART_TEXT_FORMAT = "Lives: ";
     public static final Color INITIAL_COLOR = Color.GREEN;
@@ -25,7 +25,7 @@ public class NumericalHeart extends GameObject {
      * @param renderable    The renderable representing the object. Can be null, in which case
      *                      the GameObject will not be rendered.
      */
-    public NumericalHeart(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable) {
+    public NumericHeart(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable) {
         super(topLeftCorner, dimensions, renderable);
         this.renderable = (TextRenderable) renderable;
 

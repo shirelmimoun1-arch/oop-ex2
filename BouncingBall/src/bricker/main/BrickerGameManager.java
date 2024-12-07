@@ -151,7 +151,7 @@ public class BrickerGameManager extends GameManager {
         }
 
         // Creating NumericalHearts
-        createNumericalHearts(DEFAULT_NUM_OF_LIVES,NumericalHeart.NUMERICAL_HEART_STRING);
+        createNumericalHearts(DEFAULT_NUM_OF_LIVES, NumericHeart.NUMERICAL_HEART_STRING);
 //        numericHeartFactory.createNumericalHearts(windowDimensions,DEFAULT_NUM_OF_LIVES,
 //        NumericalHeart.NUMERICAL_HEART_STRING);
     }
@@ -296,10 +296,10 @@ public class BrickerGameManager extends GameManager {
      */
     public void createNumericalHearts(int numOfLives,String numericalHeartName) {
         TextRenderable numericalHeartText = new TextRenderable(
-                NumericalHeart.NUMERICAL_HEART_TEXT_FORMAT + numOfLives);
-        numericalHeartText.setColor(NumericalHeart.INITIAL_COLOR);
-        GameObject numericalHeart = new NumericalHeart(
-                new Vector2(0, windowDimensions.y() - NumericalHeart.GAP_FROM_BUTTOM_WINDOW),
+                NumericHeart.NUMERICAL_HEART_TEXT_FORMAT + numOfLives);
+        numericalHeartText.setColor(NumericHeart.INITIAL_COLOR);
+        GameObject numericalHeart = new NumericHeart(
+                new Vector2(0, windowDimensions.y() - NumericHeart.GAP_FROM_BUTTOM_WINDOW),
                 new Vector2(GraphicHeart.HEART_SIZE, GraphicHeart.HEART_SIZE), numericalHeartText);
         numericalHeart.setTag(numericalHeartName);
         addObjectsToTheList(numericalHeart, Layer.UI);
@@ -378,9 +378,9 @@ public class BrickerGameManager extends GameManager {
                     graphicHeartFlag = true;
                 }
             }
-            if(curTag.equals(NumericalHeart.NUMERICAL_HEART_STRING) && !numericalHeartFlag){
+            if(curTag.equals(NumericHeart.NUMERICAL_HEART_STRING) && !numericalHeartFlag){
 //                System.out.println(true);
-                NumericalHeart numericHeart = (NumericalHeart) gameObject;
+                NumericHeart numericHeart = (NumericHeart) gameObject;
                 numericHeart.UpdateNumericalHeart(numOfHeartsRemain);
                 numericalHeartFlag = true;
             }
@@ -403,8 +403,8 @@ public class BrickerGameManager extends GameManager {
 //                    Layer.UI,GraphicHeart.GRAPHIC_HEART_STRING, Vector2.ZERO);
             for (GameObject gameObject : gameObjects().objectsInLayer(Layer.UI)) {
                 String curTag = gameObject.getTag();
-                if (curTag.equals(NumericalHeart.NUMERICAL_HEART_STRING)) {
-                    NumericalHeart numericHeart = (NumericalHeart) gameObject;
+                if (curTag.equals(NumericHeart.NUMERICAL_HEART_STRING)) {
+                    NumericHeart numericHeart = (NumericHeart) gameObject;
                     numericHeart.UpdateNumericalHeart(numOfHeartsRemain);
                 }
             }
@@ -496,23 +496,19 @@ public class BrickerGameManager extends GameManager {
 }
 
 //todo:
-// 1) check if last heart needs to be disappeared before pop window
-// 2) check the error:
-//         Warning: your frames are
-//         taking too long to update, which means the target frame-rate (120) cannot be reached. If your
-//         frame-rate is low, then either your update pass is taking too long (too many objects? an overly
-//         complex logic?), or the target frame-rate is set too high for the hardware.
-// 3) check if the arguments are always valid or it needs to br checked V
-// 4) explain why we added UpdateNumericalHeart in numerical heart class
+// 1) Explain in Ball class : getTurboMode(), activeTurbo(), resetBall()
+// 2) ask if turbo mode doesnt break encapsulation
+// 3) Explain in Paddle class : onCollisionEnter(), removeExtraPaddle(),
+// 4) explain the design chosen for the hearts
 // 5) should I, and how to create an object game factory
-// 6) should we add lottery factor in wall of bricks factory?
+// 6) ask about the factories for each game object - is that necessary?
 // 7) is it bad practice?
 //        this.imageReader = imageReader;
 //        this.soundReader = soundReader;
 //        this.windowDimensions = windowController.getWindowDimensions();
 //        this.windowController = windowController;
 //        this.inputListener = inputListener;
-// 8) should we enter a velocity to graphic heart creation func?
-// 9) is it good design to handle the turbo mode from the ball, and only calling the mode from the strategy?
-//    and which class do the constants belong to?
-// 10) ask about the factories for each game object - is that necessary?
+// 8) is it good design to handle the turbo mode from the ball, and only calling the mode from the strategy?
+// 9) and which class do the constants belong to?
+// 10) Double strategy implementation.
+

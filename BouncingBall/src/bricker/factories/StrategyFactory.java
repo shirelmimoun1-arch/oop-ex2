@@ -20,12 +20,12 @@ public class StrategyFactory {
     public CollisionStrategy createStrategy() {
         int randomValue = rand.nextInt(10);
         return switch (randomValue) {
-            case 0, 1, 2, 3, 4 -> new DubbleBehaviorCollisionStrategy(brickerGameManager);
-            case 5 -> new DubbleBehaviorCollisionStrategy(brickerGameManager);
-            case 6 -> new DubbleBehaviorCollisionStrategy(brickerGameManager);
-            case 7 -> new DubbleBehaviorCollisionStrategy(brickerGameManager);
-            case 8 -> new DubbleBehaviorCollisionStrategy(brickerGameManager);
-            case 9 -> new DubbleBehaviorCollisionStrategy( brickerGameManager);
+            case 0, 1, 2, 3, 4 -> new BasicCollisionStrategy(brickerGameManager);
+            case 5 -> new ExtraBallCollisionStrategy(brickerGameManager);
+            case 6 -> new ExtraPaddleCollisionStrategy(brickerGameManager);
+            case 7 -> new ExtraLifeCollisionStrategy(brickerGameManager);
+            case 8 -> new TurboCollisionStrategy(brickerGameManager);
+            case 9 -> new DoubleBehaviorCollisionStrategy( brickerGameManager);
             default -> null;
         };
     }
@@ -36,7 +36,7 @@ public class StrategyFactory {
             case 1 -> new ExtraPaddleCollisionStrategy(brickerGameManager);
             case 2 -> new ExtraLifeCollisionStrategy(brickerGameManager);
             case 3 -> new TurboCollisionStrategy(brickerGameManager);
-            case 4 -> new DubbleBehaviorCollisionStrategy(brickerGameManager);
+            case 4 -> new DoubleBehaviorCollisionStrategy(brickerGameManager);
             default -> null;
         };
     }
