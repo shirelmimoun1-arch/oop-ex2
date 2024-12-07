@@ -11,12 +11,15 @@ import danogl.util.Vector2;
  */
 public class Brick extends GameObject {
     public static final String BRICK_NAME = "Brick";
-    public static final String BASIC_BRICK_NAME = "Brick Basic";
-    public static final String EXTRA_BALL_BRICK_NAME = "Brick Extra Ball";
-    public static final String EXTRA_PADDLE_BRICK_NAME = "Brick Extra Paddle";
-    public static final String TURBO_BRICK_NAME = "Brick Turbo";
-    public static final String EXTRA_LIFE_BRICK_NAME = "Brick Extra Life";
-    public static final String DUBBLE_BRICK_NAME = "Brick Dubble Behavior";
+    public static final float BRICK_HEIGHT = 15;
+    public static final String BRICK_PICTURE_PATH = "assets/brick.png";
+    public static final String BRICK_COLLISION_MESSAGE = "Collision with brick detected";
+//    public static final String BASIC_BRICK_NAME = "Brick Basic";
+//    public static final String EXTRA_BALL_BRICK_NAME = "Brick Extra Ball";
+//    public static final String EXTRA_PADDLE_BRICK_NAME = "Brick Extra Paddle";
+//    public static final String TURBO_BRICK_NAME = "Brick Turbo";
+//    public static final String EXTRA_LIFE_BRICK_NAME = "Brick Extra Life";
+//    public static final String DUBBLE_BRICK_NAME = "Brick Dubble Behavior";
     private CollisionStrategy collisionStrategy;
 
     /**
@@ -28,7 +31,18 @@ public class Brick extends GameObject {
      * @param renderable    The renderable representing the object. Can be null, in which case
      *                      the GameObject will not be rendered.
      */
-    public Brick(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable, CollisionStrategy collisionStrategy) {
+
+    /**
+     * Construct a new GameObject instance.
+     * @param topLeftCorner Position of the object, in window coordinates (pixels).
+     *                             Note that (0,0) is the top-left corner of the window.
+     * @param dimensions Width and height in window coordinates.
+     * @param renderable The renderable representing the object. Can be null, in which case
+     *                             the GameObject will not be rendered.
+     * @param collisionStrategy The brick strategy.
+     */
+    public Brick(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable,
+                 CollisionStrategy collisionStrategy) {
         super(topLeftCorner, dimensions, renderable);
         this.collisionStrategy = collisionStrategy;
     }

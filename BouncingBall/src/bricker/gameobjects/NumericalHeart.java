@@ -11,7 +11,8 @@ import java.awt.*;
  */
 public class NumericalHeart extends GameObject {
     public static final String NUMERICAL_HEART_STRING = "Numerical Heart";
-    public static final String NUMERICAL_HEART_TEXT = "Lives: ";
+    public static final String NUMERICAL_HEART_TEXT_FORMAT = "Lives: ";
+    public static final Color INITIAL_COLOR = Color.GREEN;
     public static final int GAP_FROM_BUTTOM_WINDOW = 80;
     private final TextRenderable renderable;
 
@@ -42,7 +43,7 @@ public class NumericalHeart extends GameObject {
     }
 
     private void changeNumOfLives(int numOfLives) {
-        String newName = NUMERICAL_HEART_TEXT + numOfLives;
+        String newName = NUMERICAL_HEART_TEXT_FORMAT + numOfLives;
         renderable.setString(newName);
     }
 

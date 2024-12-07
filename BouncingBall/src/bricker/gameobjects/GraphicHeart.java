@@ -12,6 +12,7 @@ import danogl.util.Vector2;
 public class GraphicHeart extends GameObject {
     public static final String GRAPHIC_HEART_STRING = "Graphic Heart";
     public static final String FALLING_HEART_STRING = "fallingHeart";
+    public static final String GRAPGIC_HEART_PICTURE_PATH = "assets/heart.png";
     public static final int HEART_SIZE = 30;
     public static final int GRAPHIC_HEART_GAP_FROM_BUTTOM_WINDOW = 20;
     private BrickerGameManager brickerGameManager;

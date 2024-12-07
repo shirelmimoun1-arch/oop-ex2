@@ -1,6 +1,6 @@
 package bricker.brick_strategies;
 
-import bricker.factories.GraphicHeartFactory;
+//import bricker.factories.GraphicHeartFactory;
 import bricker.gameobjects.GraphicHeart;
 import bricker.main.BrickerGameManager;
 import danogl.GameObject;
@@ -13,7 +13,7 @@ import danogl.util.Vector2;
 public class ExtraLifeCollisionStrategy implements CollisionStrategy {
     public static final int FALLING_HEART_Y_VELOCITY = 100;
     private BrickerGameManager brickerGameManager;
-    private GraphicHeartFactory graphicHeartFactory;
+//    private GraphicHeartFactory graphicHeartFactory;
 
     /**
      * Constructor for ExtraLifeCollisionStrategy.
@@ -21,7 +21,7 @@ public class ExtraLifeCollisionStrategy implements CollisionStrategy {
      */
     public ExtraLifeCollisionStrategy(BrickerGameManager brickerGameManager){
         this.brickerGameManager = brickerGameManager;
-        this.graphicHeartFactory = new GraphicHeartFactory(brickerGameManager);
+//        this.graphicHeartFactory = new GraphicHeartFactory(brickerGameManager);
     }
 
     /**
@@ -33,11 +33,16 @@ public class ExtraLifeCollisionStrategy implements CollisionStrategy {
     public void onCollision(GameObject object1, GameObject object2) {
         Vector2 graphicHeartPosition = object1.getCenter();
         Vector2 graphicHeartVelocity = new Vector2(0, FALLING_HEART_Y_VELOCITY);
-        graphicHeartFactory.createGraphicHearts(
-                BrickerGameManager.HEART_PICTURE_PATH,
+        brickerGameManager.createGraphicHearts(
+                GraphicHeart.GRAPGIC_HEART_PICTURE_PATH,
                 graphicHeartPosition,
                 Layer.DEFAULT,GraphicHeart.FALLING_HEART_STRING,
                 graphicHeartVelocity);
+//        graphicHeartFactory.createGraphicHearts(
+//                BrickerGameManager.HEART_PICTURE_PATH,
+//                graphicHeartPosition,
+//                Layer.DEFAULT,GraphicHeart.FALLING_HEART_STRING,
+//                graphicHeartVelocity);
         brickerGameManager.removeGameObject(object1);
     }
 }

@@ -1,6 +1,6 @@
 package bricker.brick_strategies;
 
-import bricker.factories.PaddleFactory;
+//import bricker.factories.PaddleFactory;
 import bricker.gameobjects.Paddle;
 import bricker.main.BrickerGameManager;
 import danogl.GameManager;
@@ -12,9 +12,7 @@ import danogl.util.Vector2;
  */
 public class ExtraPaddleCollisionStrategy implements CollisionStrategy {
     private  BrickerGameManager brickerGameManager;
-    public static boolean extraPaddleExists;
-    private  PaddleFactory paddleFactory;
-    private GameObject extraPaddle;
+//    private  PaddleFactory paddleFactory;
 
 
     /**
@@ -23,8 +21,7 @@ public class ExtraPaddleCollisionStrategy implements CollisionStrategy {
      */
     public ExtraPaddleCollisionStrategy(GameManager brickerGameManager) {
         this.brickerGameManager = (BrickerGameManager) brickerGameManager;
-        this.paddleFactory = new PaddleFactory(brickerGameManager);
-        this.extraPaddleExists = false;
+//        this.paddleFactory = new PaddleFactory(brickerGameManager);
     }
 
     /**
@@ -34,23 +31,27 @@ public class ExtraPaddleCollisionStrategy implements CollisionStrategy {
      */
     @Override
     public void onCollision(GameObject object1, GameObject object2) {
-        if (!extraPaddleExists) {
+        if (!brickerGameManager.doesExtraPaddleExist()) {
             createExtraPaddle();
         }
         brickerGameManager.removeGameObject(object1);
     }
 
     private void createExtraPaddle() {
-        extraPaddleExists = true;
         Vector2 extraPaddlePosition = new Vector2(
                 brickerGameManager.windowDimensions.x() / 2,
                 brickerGameManager.windowDimensions.y() / 2);
-        paddleFactory.createPaddle(Paddle.PADDLE_PICTURE_PATH,
+        brickerGameManager.createPaddle(Paddle.PADDLE_PICTURE_PATH,
                 extraPaddlePosition,
                 Paddle.PADDLE_HEIGHT,
                 Paddle.PADDLE_WIDTH,
                 Paddle.EXTRA_PADDLE_NAME);
-
+//        paddleFactory.createPaddle(Paddle.PADDLE_PICTURE_PATH,
+//                extraPaddlePosition,
+//                Paddle.PADDLE_HEIGHT,
+//                Paddle.PADDLE_WIDTH,
+//                Paddle.EXTRA_PADDLE_NAME);
     }
+
 
 }

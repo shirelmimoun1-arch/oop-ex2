@@ -1,5 +1,6 @@
 package bricker.main;
 
+import bricker.brick_strategies.CollisionStrategy;
 import bricker.brick_strategies.ExtraBallCollisionStrategy;
 import bricker.factories.*;
 import bricker.gameobjects.*;
@@ -7,6 +8,8 @@ import danogl.GameManager;
 import danogl.GameObject;
 import danogl.collisions.Layer;
 import danogl.gui.*;
+import danogl.gui.rendering.Renderable;
+import danogl.gui.rendering.TextRenderable;
 import danogl.util.Vector2;
 import java.awt.event.KeyEvent;
 import java.util.Random;
@@ -18,24 +21,29 @@ import java.util.Random;
  */
 public class BrickerGameManager extends GameManager {
     public static final int NUM_OF_ARGUMENTS = 2;
+
+    public static final String WINDOW_TITLE = "Bricker Game";
     public static final float WINDOW_WIDTH = 700;
     public static final float WINDOW_HEIGHT = 500;
+
     public static final int DEFAULT_ROWS = 7;
     public static final int NUM_OF_BRICK = 8;
-    public static final int BALL_SPEED = 200;
+
     public static final float WALL_FACTOR = 0.001f;
     public static final float FACTOR_OF_HALF = 0.5f;
     public static final int DEFAULT_NUM_OF_LIVES = 3;
     public static final int MAX_NUM_OF_HEARTS = 4;
     public static final int TARGET_FRAME_RATE = 100;
-    public static final String BRICK_PICTURE_PATH = "assets/brick.png";
-    public static final String HEART_PICTURE_PATH = "assets/heart.png";
-    public static final String WINDOW_TITLE = "Bricker Game";
-    public static final String BRICK_COLLISION_MESSAGE = "Collision with brick detected";
+    public static final String BORDER_NAME = "Border";
+    public static final String WALLPAPER_PICTURE_PATH = "assets/DARK_BG2_small.jpeg";
+
     public static final String EMPTY_PROMPT = "";
     public static final String LOSE_MESSAGE = "You Lose!";
     public static final String WIN_MESSAGE = "You Win!";
     public static final String ASK_TO_PLAY_AGAIN_MESSAGE = " Play again?";
+    public static final float FACTOR_OF_X_GAP = 0.01f;
+    public static final float FACTOR_OF_Y_GAP = 0.02f;
+
     private  int numOfBricksInRow;
     private int numOfRows;
     public int numOfHeartsRemain;
@@ -45,13 +53,14 @@ public class BrickerGameManager extends GameManager {
     private WindowController windowController;
     public Vector2 windowDimensions;
     public UserInputListener inputListener;
-    private BallFactory ballFactory;
-    private PaddleFactory paddleFactory;
-    private WallOfBricksFactory wallOfBricks;
-    private WallPaperFactory wallPaperFactory;
-    private BordersFactory bordersFactory;
-    private NumericHeartFactory numericHeartFactory;
-    private GraphicHeartFactory graphicHeartFactory;
+    private StrategyFactory brickStrategyFactory;
+//    private BallFactory ballFactory;
+//    private PaddleFactory paddleFactory;
+//    private WallOfBricksFactory wallOfBricks;
+//    private WallPaperFactory wallPaperFactory;
+//    private BordersFactory bordersFactory;
+//    private NumericHeartFactory numericHeartFactory;
+//    private GraphicHeartFactory graphicHeartFactory;
 
     /**
      * Constructs a new BrickerGameManager instance.
@@ -60,18 +69,20 @@ public class BrickerGameManager extends GameManager {
      * @param numOfRow The number of rows in the wall of bricks.
      * @param numOfBricksInRow The number of bricks per row.
      */
-    public BrickerGameManager(String windowTitle, Vector2 windowDimensions, int numOfRow, int numOfBricksInRow) {
+    public BrickerGameManager(String windowTitle, Vector2 windowDimensions, int numOfRow,
+                              int numOfBricksInRow) {
         super(windowTitle, windowDimensions);
         this.numOfRows = numOfRow;
         this.numOfBricksInRow = numOfBricksInRow;
         this.bricksHitCounter = 0;
-        this.ballFactory = new BallFactory(this);
-        this.paddleFactory =  new PaddleFactory(this);
-        this.wallOfBricks = new WallOfBricksFactory(this);
-        this.wallPaperFactory = new WallPaperFactory(this);
-        this.bordersFactory = new BordersFactory(this);
-        this.numericHeartFactory = new NumericHeartFactory(this);
-        this.graphicHeartFactory = new GraphicHeartFactory(this);
+//        this.ballFactory = new BallFactory(this);
+//        this.paddleFactory =  new PaddleFactory(this);
+//        this.wallOfBricks = new WallOfBricksFactory(this);
+//        this.wallPaperFactory = new WallPaperFactory(this);
+//        this.bordersFactory = new BordersFactory(this);
+//        this.numericHeartFactory = new NumericHeartFactory(this);
+//        this.graphicHeartFactory = new GraphicHeartFactory(this);
+        this.brickStrategyFactory = new StrategyFactory(this);
         this.numOfHeartsRemain = DEFAULT_NUM_OF_LIVES;
     }
 
@@ -96,43 +107,202 @@ public class BrickerGameManager extends GameManager {
         this.windowDimensions = windowController.getWindowDimensions();
         this.windowController = windowController;
         this.inputListener = inputListener;
-        windowController.setTargetFramerate(TARGET_FRAME_RATE);
-        // because it sent this error: Warning: your frames are
-        // taking too long to update, which means the target frame-rate (120) cannot be reached. If your
-        // frame-rate is low, then either your update pass is taking too long (too many objects? an overly
-        // complex logic?), or the target frame-rate is set too high for the hardware.
 
         // Creating wallpaper
-        wallPaperFactory.createWallPaper(imageReader, windowDimensions);
+        createWallPaper(imageReader, windowDimensions);
+//        wallPaperFactory.createWallPaper(imageReader, windowDimensions);
+
+        // Creating borders
+        createBorder(windowDimensions, BORDER_NAME);
+//        bordersFactory.createBorder(windowDimensions, BordersFactory.BORDER_NAME);
+
+        // Creating WallOfBricks
+        createWallOfBricks(windowDimensions, imageReader, numOfRows, numOfBricksInRow,
+                Brick.BRICK_PICTURE_PATH);
+//        wallOfBricks.createWallOfBricks(windowDimensions, imageReader, numOfRows, numOfBricksInRow,
+//                BRICK_PICTURE_PATH);
 
         // Creating ball
-        ballFactory.createBall(windowDimensions.mult(FACTOR_OF_HALF), Ball.BALL_RADIUS,
-                createRandomVelocity(BALL_SPEED), Ball.BALL_PICTURE_PATH,
+        createBall(windowDimensions.mult(FACTOR_OF_HALF), Ball.BALL_RADIUS,
+                createRandomVelocity(Ball.BALL_SPEED), Ball.BALL_PICTURE_PATH,
                 Ball.CLASH_SOUND_PATH, Ball.BALL_NAME);
+//        ballFactory.createBall(windowDimensions.mult(FACTOR_OF_HALF), Ball.BALL_RADIUS,
+//                createRandomVelocity(BALL_SPEED), Ball.BALL_PICTURE_PATH,
+//                Ball.CLASH_SOUND_PATH, Ball.BALL_NAME);
 
         // Creating user paddles
         Vector2 startingPlacePaddle = new Vector2(
                 windowDimensions.mult(FACTOR_OF_HALF).x(),
                 windowDimensions.y()-Paddle.PADDLE_GAP_FROM_BUTTOM_WINDOW);
-        paddleFactory.createPaddle(Paddle.PADDLE_PICTURE_PATH,startingPlacePaddle,
+        createPaddle(Paddle.PADDLE_PICTURE_PATH,startingPlacePaddle,
                 Paddle.PADDLE_HEIGHT,Paddle.PADDLE_WIDTH,Paddle.PADDLE_NAME);
+//        paddleFactory.createPaddle(Paddle.PADDLE_PICTURE_PATH,startingPlacePaddle,
+//                Paddle.PADDLE_HEIGHT,Paddle.PADDLE_WIDTH,Paddle.PADDLE_NAME);
 
-        // Creating borders
-        bordersFactory.createBorder(windowDimensions, BordersFactory.BORDER_NAME);
-
-        // Creating WallOfBricks
-        wallOfBricks.createWallOfBricks(windowDimensions, imageReader, numOfRows, numOfBricksInRow,
-                BRICK_PICTURE_PATH);
         // Creating GraphicHearts
         for (int i = 0; i < numOfHeartsRemain; i++) {
             Vector2 setPlace = new Vector2
                     (GraphicHeart.HEART_SIZE * (i + 1),
                     windowDimensions.y() - GraphicHeart.GRAPHIC_HEART_GAP_FROM_BUTTOM_WINDOW);
-            graphicHeartFactory.createGraphicHearts(HEART_PICTURE_PATH, setPlace,
+            createGraphicHearts(GraphicHeart.GRAPGIC_HEART_PICTURE_PATH, setPlace,
                     Layer.UI,GraphicHeart.GRAPHIC_HEART_STRING, Vector2.ZERO);
+//            graphicHeartFactory.createGraphicHearts(HEART_PICTURE_PATH, setPlace,
+//                    Layer.UI,GraphicHeart.GRAPHIC_HEART_STRING, Vector2.ZERO);
         }
+
         // Creating NumericalHearts
-        numericHeartFactory.createNumericalHearts(windowDimensions,DEFAULT_NUM_OF_LIVES,NumericalHeart.NUMERICAL_HEART_STRING);
+        createNumericalHearts(DEFAULT_NUM_OF_LIVES,NumericalHeart.NUMERICAL_HEART_STRING);
+//        numericHeartFactory.createNumericalHearts(windowDimensions,DEFAULT_NUM_OF_LIVES,
+//        NumericalHeart.NUMERICAL_HEART_STRING);
+    }
+
+    private void createWallPaper(ImageReader imageReader, Vector2 windowDimensions){
+        Renderable wallPaperImage = imageReader.readImage(WALLPAPER_PICTURE_PATH, false);
+        GameObject wallPaper = new GameObject(Vector2.ZERO, windowDimensions, wallPaperImage);
+        wallPaper.setCenter(windowDimensions.mult(FACTOR_OF_HALF));
+        addObjectsToTheList(wallPaper, Layer.BACKGROUND);
+    }
+
+    /**
+     * Creates a ball.
+     * @param ballPosition the position of the ball.
+     * @param ballRadius the radius of the ball.
+     * @param ballSpeed the speed of the ball.
+     * @param ballPicturePath the path to the ball's picture.
+     * @param clashSound the path to the ball's clash sound.
+     * @param ballName the name of the ball.
+     */
+    public void createBall(Vector2 ballPosition, float ballRadius, Vector2 ballSpeed,
+                           String ballPicturePath, String clashSound, String ballName){
+        Renderable ballImage = imageReader.readImage(ballPicturePath, true);
+        Sound collisionSound = soundReader.readSound(clashSound);
+        Vector2 ballDimensions = new Vector2(ballRadius, ballRadius);
+        GameObject ball = new Ball(Vector2.ZERO, ballDimensions, ballImage, collisionSound);
+        ball.setCenter(ballPosition);
+        ball.setTag(ballName);
+        ball.setVelocity(ballSpeed);
+        addObjectsToTheList(ball);
+    }
+
+    /**
+     * Creates a paddle object and adds it to the game
+     * @param paddlePicturePath The path to the picture of the paddle
+     * @param startingPlace The starting place of the paddle
+     * @param paddleHeight Paddle height
+     * @param paddleWidth  Paddle width
+     * @param paddleName The name of the paddle
+     */
+    public void createPaddle(
+            String paddlePicturePath,
+            Vector2 startingPlace,int paddleHeight,int paddleWidth,String paddleName){
+        Renderable paddleImage = imageReader.readImage(paddlePicturePath, true);
+        GameObject paddle = new Paddle(Vector2.ZERO, new Vector2(paddleWidth, paddleHeight),
+                paddleImage,this);
+        paddle.setCenter(startingPlace);
+        paddle.setTag(paddleName);
+        addObjectsToTheList(paddle, Layer.DEFAULT);
+    }
+
+    private void createBorder(Vector2 windowDimensions, String borderName) {
+        Vector2 topLeftOfUpperAndLeftWall = Vector2.ZERO;
+        Vector2 topLeftOfDownWall = new Vector2(0, windowDimensions.y());
+        Vector2 topLeftOfRightWall = new Vector2(windowDimensions.x(), 0);
+
+        Vector2 UpAndDownWallDimensions =
+                new Vector2(windowDimensions.x(),windowDimensions.mult(WALL_FACTOR).y());
+        Vector2 RightAndLefWallDimensions =
+                new Vector2(windowDimensions.mult(WALL_FACTOR).x(),windowDimensions.y());
+
+        GameObject wallUp = new GameObject(topLeftOfUpperAndLeftWall, UpAndDownWallDimensions, null);
+        GameObject wallRight = new GameObject(topLeftOfRightWall, RightAndLefWallDimensions,null);
+        GameObject wallLeft = new GameObject(topLeftOfUpperAndLeftWall, RightAndLefWallDimensions,null);
+        GameObject wallDown = new GameObject(topLeftOfDownWall, UpAndDownWallDimensions,null);
+
+        Vector2[] wallHeights = {new Vector2(windowDimensions.x()/2, 0),
+                new Vector2(windowDimensions.x(), windowDimensions.y()/2),
+                new Vector2(0,windowDimensions.y()/2),
+                new Vector2(windowDimensions.x()/2, windowDimensions.y())
+        };
+
+        GameObject[] walls = {wallUp, wallRight, wallLeft, wallDown};
+        for (int i = 0; i < 3; i++) {
+            walls[i].setCenter(wallHeights[i]);
+            walls[i].setTag(borderName);
+            addObjectsToTheList(walls[i], Layer.STATIC_OBJECTS);
+        }
+
+        walls[3].setCenter(wallHeights[3]);
+        walls[3].setTag(borderName);
+        addObjectsToTheList(walls[3], Layer.BACKGROUND);
+    }
+
+    private void createWallOfBricks(Vector2 windowDimensions,
+                                   ImageReader imageReader,
+                                   int numOfRows,
+                                   int numOfBricksInRow,String imagePath) {
+        Renderable brickImage = imageReader.readImage(imagePath, false);
+        float gapX = windowDimensions.x() * FACTOR_OF_X_GAP;
+        float gapY = windowDimensions.y() * FACTOR_OF_Y_GAP;
+        float brickLength = (windowDimensions.x() - (numOfBricksInRow + 1) * gapX) / (numOfBricksInRow);
+        float brickHeight = Brick.BRICK_HEIGHT;
+        for (int i = 0; i < numOfRows; i++) {
+            for (int j = 0; j < numOfBricksInRow; j++) {
+                float x = (j * (brickLength + gapX) ) + gapX;
+                float y = i * (gapY+brickHeight);
+                addASingleBrick(brickStrategyFactory,
+                        new Vector2(x, y),
+                        new Vector2(brickLength, brickHeight),
+                        brickImage);
+            }
+        }
+    }
+
+    private void addASingleBrick(StrategyFactory brickStrategyFactory, Vector2 topLeftCorner,
+                                 Vector2 dimensions, Renderable brickImage){
+        CollisionStrategy collisionStrategy = brickStrategyFactory.createStrategy();
+        Brick brick = new Brick(topLeftCorner, dimensions, brickImage, collisionStrategy);
+        brick.setTag(Brick.BRICK_NAME);
+        addObjectsToTheList(brick, Layer.STATIC_OBJECTS);
+    }
+
+    /**
+     * Creates a new heart object with the specified image, position, layer, and tag.
+     * @param pathImage The path to the image file for the heart.
+     * @param setPlace The position of the heart object.
+     * @param layer The layer on which the heart object will be rendered.
+     * @param graphicHeartName The tag for the heart object.
+     * @param velocity The velocity of the heart object.
+     */
+    public void createGraphicHearts(String pathImage,
+                                    Vector2 setPlace,
+                                    int layer,
+                                    String graphicHeartName,
+                                    Vector2 velocity) {
+        Renderable heartImage = imageReader.readImage(pathImage, true);
+        GameObject heart = new GraphicHeart(
+                Vector2.ZERO,
+                new Vector2(GraphicHeart.HEART_SIZE, GraphicHeart.HEART_SIZE),
+                heartImage, this);
+        heart.setCenter(setPlace);
+        heart.setVelocity(velocity);
+        heart.setTag(graphicHeartName);
+        addObjectsToTheList(heart, layer);
+    }
+
+    /**
+     * Creates the numerical hearts in the game.
+     * @param numOfLives The number of lives remaining.
+     * @param numericalHeartName The name of the numerical heart object.
+     */
+    public void createNumericalHearts(int numOfLives,String numericalHeartName) {
+        TextRenderable numericalHeartText = new TextRenderable(
+                NumericalHeart.NUMERICAL_HEART_TEXT_FORMAT + numOfLives);
+        numericalHeartText.setColor(NumericalHeart.INITIAL_COLOR);
+        GameObject numericalHeart = new NumericalHeart(
+                new Vector2(0, windowDimensions.y() - NumericalHeart.GAP_FROM_BUTTOM_WINDOW),
+                new Vector2(GraphicHeart.HEART_SIZE, GraphicHeart.HEART_SIZE), numericalHeartText);
+        numericalHeart.setTag(numericalHeartName);
+        addObjectsToTheList(numericalHeart, Layer.UI);
     }
 
     /**
@@ -159,7 +329,7 @@ public class BrickerGameManager extends GameManager {
     public void removeGameObject(GameObject gameObject) {
         if (gameObject != null) {
             if(gameObject.getTag().startsWith(Brick.BRICK_NAME)) {
-                System.out.println(BRICK_COLLISION_MESSAGE);
+                System.out.println(Brick.BRICK_COLLISION_MESSAGE);
                 boolean disappearFlag = gameObjects().removeGameObject(gameObject, Layer.STATIC_OBJECTS);
                 if (disappearFlag) {
                     increaseBricksHitCounter();
@@ -178,7 +348,6 @@ public class BrickerGameManager extends GameManager {
         bricksHitCounter++;
     }
 
-
     /**
      * Creates a random velocity vector for the ball.
      * @param ballSpeed The speed of the ball.
@@ -191,12 +360,11 @@ public class BrickerGameManager extends GameManager {
         if(rand.nextBoolean()){
             ballVelX *= -1;
         }
-        if(rand.nextBoolean()){
+        if(rand.nextBoolean()) {
             ballVelY *= -1;
         }
         return new Vector2(ballVelX, ballVelY);
     }
-
 
     private void decreaseLives(){
         boolean graphicHeartFlag = false;
@@ -229,8 +397,10 @@ public class BrickerGameManager extends GameManager {
 //            System.out.println(numOfHeartsRemain);
             Vector2 setPlace = (new Vector2(GraphicHeart.HEART_SIZE * (numOfHeartsRemain),
                     windowDimensions.y() - GraphicHeart.GRAPHIC_HEART_GAP_FROM_BUTTOM_WINDOW));
-            graphicHeartFactory.createGraphicHearts(HEART_PICTURE_PATH, setPlace,
+            createGraphicHearts(GraphicHeart.GRAPGIC_HEART_PICTURE_PATH, setPlace,
                     Layer.UI,GraphicHeart.GRAPHIC_HEART_STRING, Vector2.ZERO);
+//            graphicHeartFactory.createGraphicHearts(HEART_PICTURE_PATH, setPlace,
+//                    Layer.UI,GraphicHeart.GRAPHIC_HEART_STRING, Vector2.ZERO);
             for (GameObject gameObject : gameObjects().objectsInLayer(Layer.UI)) {
                 String curTag = gameObject.getTag();
                 if (curTag.equals(NumericalHeart.NUMERICAL_HEART_STRING)) {
@@ -240,7 +410,6 @@ public class BrickerGameManager extends GameManager {
             }
         }
     }
-
 
     private void checkObjectExit() {
         for (GameObject gameObject : gameObjects().objectsInLayer(Layer.DEFAULT)) {
@@ -252,13 +421,25 @@ public class BrickerGameManager extends GameManager {
                         decreaseLives();
                         gameObject.setCenter(windowDimensions.mult(FACTOR_OF_HALF));
                         break;
-
                     case ExtraBallCollisionStrategy.PUCK_BALL_NAME, GraphicHeart.FALLING_HEART_STRING:
                         gameObjects().removeGameObject(gameObject);
                         break;
                 }
             }
         }
+    }
+
+    /**
+     * Checks if an extra paddle currently exists in the game.
+     * @return true if an extra paddle exists, false otherwise.
+     */
+    public boolean doesExtraPaddleExist() {
+        for (GameObject gameObject : gameObjects().objectsInLayer(Layer.DEFAULT)) {
+            if (gameObject.getTag().equals(Paddle.EXTRA_PADDLE_NAME)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -273,7 +454,6 @@ public class BrickerGameManager extends GameManager {
         checkObjectExit();
         checkForGameEnd();
     }
-
 
     private void checkForGameEnd() {
         String prompt = EMPTY_PROMPT;
@@ -333,3 +513,6 @@ public class BrickerGameManager extends GameManager {
 //        this.windowController = windowController;
 //        this.inputListener = inputListener;
 // 8) should we enter a velocity to graphic heart creation func?
+// 9) is it good design to handle the turbo mode from the ball, and only calling the mode from the strategy?
+//    and which class do the constants belong to?
+// 10) ask about the factories for each game object - is that necessary?

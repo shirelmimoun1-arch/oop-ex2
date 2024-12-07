@@ -61,25 +61,34 @@ public class Ball extends GameObject {
         setVelocity(newVelocity);
         collisionSound.play();
         this.collisionCounter++;
-        if (this.inTurboMode){
+        if (this.getTurboMode()){
             this.turboCollisions++;
             if (this.turboCollisions > TurboCollisionStrategy.MAX_NUM_OF_BALL_COLLISIONS_IN_TURBO_MODE) {
                 resetBall();
-                turboCollisions = 0;
             }
         }
     }
 
+    public boolean getTurboMode() {
+        return inTurboMode;
+    }
+
     /**
-     * Sets the turbo mode of the ball.
-     * @param inTurboMode A boolean that indicates whether the ball is in turbo mode.
+     * Handles the turbo mode of the ball.
+     * @param turboBallVelocityMultiplier The multiplier of the velocity of the turbo ball.
+     * @param redBallPath The turbo ball picture path.
      */
-    public void setTurboMode(boolean inTurboMode ) {
-        this.inTurboMode = inTurboMode;
+    public void activeTurbo(int turboBallVelocityMultiplier, Renderable redBallPath) {
+        if (!this.inTurboMode) {
+            this.inTurboMode = true;
+            this.setVelocity(this.getVelocity().mult(turboBallVelocityMultiplier));
+            this.renderer().setRenderable(redBallPath);
+        }
     }
 
     private void resetBall() {
-        setTurboMode(false);
+        this.inTurboMode = false;
+        turboCollisions = 0;
         setVelocity(getVelocity().mult(BrickerGameManager.FACTOR_OF_HALF));
         renderer().setRenderable(renderable);
     }

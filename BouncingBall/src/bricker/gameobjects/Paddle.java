@@ -37,7 +37,7 @@ public class Paddle extends GameObject {
                   BrickerGameManager brickerGameManager) {
         super(topLeftCorner, dimensions, renderable);
         this.brickerGameManager = brickerGameManager;
-        this.extraPaddleNumOfHit =0;
+        this.extraPaddleNumOfHit = 0;
     }
 
     /**
@@ -51,9 +51,9 @@ public class Paddle extends GameObject {
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
         if ((other.getTag().equals(Ball.BALL_NAME)||other.getTag().equals(Ball.PUCK_BALL_NAME))
-                && getTag().equals(EXTRA_PADDLE_NAME)){
+                && this.getTag().equals(EXTRA_PADDLE_NAME)){
             extraPaddleNumOfHit++;
-            if (extraPaddleNumOfHit == MAX_NUM_OF_HIT) {
+            if (extraPaddleNumOfHit >= MAX_NUM_OF_HIT) {
                 extraPaddleNumOfHit = 0;
                 removeExtraPaddle();
             }
@@ -61,8 +61,7 @@ public class Paddle extends GameObject {
     }
 
     private void removeExtraPaddle() {
-            brickerGameManager.removeGameObject(this);
-            ExtraPaddleCollisionStrategy.extraPaddleExists = false;
+        brickerGameManager.removeGameObject(this);
     }
 
     /**

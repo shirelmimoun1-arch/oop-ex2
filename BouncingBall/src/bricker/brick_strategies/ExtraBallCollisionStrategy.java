@@ -1,6 +1,6 @@
 package bricker.brick_strategies;
 
-import bricker.factories.BallFactory;
+//import bricker.factories.BallFactory;
 import bricker.gameobjects.Ball;
 import bricker.main.BrickerGameManager;
 import danogl.GameManager;
@@ -35,12 +35,15 @@ public class ExtraBallCollisionStrategy implements CollisionStrategy {
      */
     @Override
     public void onCollision(GameObject object1, GameObject object2) {
-        BallFactory ballFactory = new BallFactory(brickerGameManager);
+//        BallFactory ballFactory = new BallFactory(brickerGameManager);
         Vector2 puckBallPosition = object1.getCenter();
         for (int i = 0; i < NUM_OF_PUCK_BALL_ADDED; i++) {
-            ballFactory.createBall(puckBallPosition,
+            brickerGameManager.createBall(puckBallPosition,
                     Ball.BALL_RADIUS * (PUCK_BALL_SIZE_FACTOR), createPuckBallVelocity(),
                     PUCK_BALL_PATH, Ball.CLASH_SOUND_PATH, PUCK_BALL_NAME);
+//            ballFactory.createBall(puckBallPosition,
+//                    Ball.BALL_RADIUS * (PUCK_BALL_SIZE_FACTOR), createPuckBallVelocity(),
+//                    PUCK_BALL_PATH, Ball.CLASH_SOUND_PATH, PUCK_BALL_NAME);
         }
         brickerGameManager.removeGameObject(object1);
     }
@@ -49,7 +52,7 @@ public class ExtraBallCollisionStrategy implements CollisionStrategy {
         Random rand = new Random();
         double angle = rand.nextDouble() * Math.PI;
         float velocityX = (float) Math.cos(angle) * Ball.BALL_SPEED;
-        float velocityY = (float) Math.sin(angle) * BrickerGameManager.BALL_SPEED;
+        float velocityY = (float) Math.sin(angle) * Ball.BALL_SPEED;
         return new Vector2(velocityX, velocityY);
     }
 }
