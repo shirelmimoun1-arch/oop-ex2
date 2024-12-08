@@ -6,44 +6,133 @@ We believe the best approach to managing the list of game objects is Option 2: d
 of adding or deleting objects to the GameObjectCollection class exclusively. This ensures that the
 encapsulation principle is adhered to in the best way possible.
 
-Advantages of the Design Choice (Managing the Object List Exclusively via GameObjectCollection):
-1) Separation of Concerns:
-    Managing the collection of game objects is centralized in a single class, simplifying the tracking of
-    changes and avoiding code duplication.
+Advantages:
+    1) Separation of Concerns:
+        Managing the collection of game objects is centralized in a single class, simplifying the tracking of
+        changes and avoiding code duplication.
 
-2) Encapsulation Principle:
-    The object list is managed privately within the GameObjectCollection, hiding implementation details from
-    other classes. This makes it easier to modify the underlying data structure or logic without affecting
-    external code.
+    2) Encapsulation Principle:
+        The object list is managed privately within the GameObjectCollection, hiding implementation details
+        from other classes. This makes it easier to modify the underlying data structure or logic without
+        affecting external code.
 
-3) Improved Maintainability:
-    All modifications to the list are handled in one place, reducing the risk of bugs and making the code
-    easier to maintain and extend.
+    3) Improved Maintainability:
+        All modifications to the list are handled in one place, reducing the risk of bugs and making the code
+        easier to maintain and extend.
 
-4) Code Reusability:
-    By encapsulating the logic within GameObjectCollection, other components of the system can reuse its
-    functionality without needing to duplicate code.
+    4) Code Reusability:
+        By encapsulating the logic within GameObjectCollection, other components of the system can reuse its
+        functionality without needing to duplicate code.
 
-Disadvantages of the Design Choice:
+Disadvantages:
 
-1) Increased Complexity in GameObjectCollection:
-    Centralizing all logic may make the GameObjectCollection class more complex as it grows to accommodate
-     various use cases.
+    1) Increased Complexity in GameObjectCollection:
+        Centralizing all logic may make the GameObjectCollection class more complex as it grows to accommodate
+         various use cases.
 
-2) Dependency on GameObjectCollection:
-    Other classes are tightly coupled to the GameObjectCollection's interface, meaning changes to its API
-    could impact multiple components.
+    2) Dependency on GameObjectCollection:
+        Other classes are tightly coupled to the GameObjectCollection's interface, meaning changes to its API
+        could impact multiple components.
 
-2. Explain how we made the numeric and graphic heart
+2. We created two classes to represent different types of hearts in the game: GraphicHeart and NumericHeart.
+The NumericHeart class specifically handles the numeric representation of the player's remaining lives.
 
-3.
+In the NumericHeart class, there is a public method that dynamically updates the numeric heart's
+appearance during the game. This method updates two key elements:
 
-4.
+    1) Text Renderer: Displays the current number of lives in text form.
 
-5. Explain why we added the getTag public method to all the game objects:
-We added the getTag public method to all game objects to facilitate identifying the type of object when
-iterating through the game object list. This allows us to manage the behavior of each object appropriately
-based on its tag. Using a tag name for identification eliminates the need for the instanceof operator,
-which is generally considered bad practice due to its impact on code flexibility and maintainability.
+    2) Color: Changes the text's color based on the remaining number of lives,
+       visually indicating the player's health status.
 
-explain why we added UpdateNumericalHeart in numericalheart class
+GraphicHeart Class:
+API:
+GraphicHeart Constructor:
+Initializes the GraphicHeart object.
+
+onCollisionEnter Method (Collision Handling):
+We added an overridden version of the onCollisionEnter method to handle the collision between the falling
+heart and the paddle. This calls the increaseLives function from the BrickerGameManager,
+because it is the manager's responsibility to track and update the number of lives in the game.
+
+shouldCollideWith Method:
+We added an overridden version of the shouldCollideWith method to ensure the falling heart can only collide
+ with the main paddle.
+
+onCollisionEnter Method (Out of Bounds Handling):
+We added an overridden version of the onCollisionEnter method to handle the case where the falling heart
+goes out of the game borders. In such a case, the heart is removed by the BrickerGameManager,
+because its his responsabilty to mange the game object
+
+3. Every collision strategy we made as a class that implements the CollisionStrategy interface.
+In every strategy, the basicCollisionStrategy instance is sent as a parameter to the
+constructor to manage the basic removal of the brick.
+In addition, every strategy uses the brickerGameManager from the public field of the basicCollisionStrategy
+for the creation of new game objects.
+
+The ExtraBallCollisionStrategy:
+We added an overridden version of the onCollision method that creates two puck balls with the
+specific attributes and add them to the game.
+
+The TurboCollisionStrategy:
+The overridden version of the onCollision method, activates the mode of the ball to turboMode.
+This mode indicates the ball to change its attributes and start counting its number of collisions with
+other game object. From the moment of the turbo mode activation, its the balls responsibility to
+make the changes and also get back to its normal mode. Because only the ball itself has the knowledge of
+its collisions with other game objects. Thus we ensure the encapsulation principle.
+
+The ExtraPaddleCollisionStrategy:
+We added an overridden version of the onCollision method to add an extra paddle only if it does not
+already exist. This is determined by a public boolean function, doesExtraPaddleExist, implemented
+in the brickerGameManager.
+It is the responsibility of the brickerGameManager to keep track of the objects currently
+present in the game. By encapsulating this logic, other classes
+(like ExtraPaddleCollisionStrategy and Paddle) focus on their specific behaviors without needing
+to handle this case.
+
+The ExtraLifeCollisionStrategy:
+We added an overridden version of the onCollision method to handle the collision between a brick and
+the ball as follows:
+Additionally, we added a constant for the velocity of the falling heart (FALLING_HEART_Y_VELOCITY).
+The logic for setting this velocity is encapsulated in this strategy because it is solely the responsibility
+of the ExtraLifeCollisionStrategy to determine the behavior and properties of the falling heart.
+
+4. The DoubleCollisionStrategy implementation:
+    This class contains two instances of the CollisionStrategy interface.
+    We made
+    that are being choose im the
+    createStrategy method.
+
+
+5. BasicCollisionStrategy API:
+    We made the brickerGameManager a public field, so that every strategy that gets the
+    basicCollisionStrategy instance could use it. Instead of sending it to every strategy.
+    The brickerGameManager is neccesary for the following strategies:
+    ExtraBallCollisionStrategy to create the puck balls,
+    ExtraLifeCollisionStrategy to create the graphic heart,
+    TurboCollisionStrategy to make the renderable of the turbo ball,
+    ExtraPaddleCollisionStrategy to make the extra paddle.
+
+   Ball API:
+    We added three public methods to manage the ball's turbo mode when activated. These methods ensure that
+    the ball itself handles its own attributes, adhering to the encapsulation principle by keeping the
+    responsibility for modifying the ball's attributes within the ball class.
+
+       1) activateTurbo Method:
+            This method activates turbo mode and updates the ball's attributes accordingly.
+
+       2) getTurboMode Method:
+            This is a getter for the turboMode field, indicating whether turbo mode is currently active.
+            It allows the TurboCollisionStrategy to check the turbo mode status without directly accessing
+            the ball's internal implementation.
+
+       3) resetBall Method:
+            This method resets the ball to its original attributes and deactivates turbo mode by resetting
+            the turboMode field. It ensures that the TurboCollisionStrategy can reactivate turbo mode
+            when needed.
+
+    By handling turbo mode logic entirely within the ball class, we minimize the coupling between the
+    TurboCollisionStrategy and the ball class, ensuring clean separation of concerns and better
+    maintainability.
+
+Paddel API:

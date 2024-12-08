@@ -1,6 +1,5 @@
 package bricker.gameobjects;
 import bricker.brick_strategies.TurboCollisionStrategy;
-import bricker.main.BrickerGameManager;
 import danogl.GameObject;
 import danogl.collisions.Collision;
 import danogl.gui.Sound;
@@ -22,6 +21,7 @@ public class Ball extends GameObject {
     private final Renderable renderable;
     private Sound collisionSound;
     private int collisionCounter;
+
     // Flag that indicates that the ball is in turbo mode
     public boolean inTurboMode;
     public int turboCollisions;
@@ -78,7 +78,7 @@ public class Ball extends GameObject {
      * @param turboBallVelocityMultiplier The multiplier of the velocity of the turbo ball.
      * @param redBallPath The turbo ball picture path.
      */
-    public void activeTurbo(int turboBallVelocityMultiplier, Renderable redBallPath) {
+    public void activeTurbo(float turboBallVelocityMultiplier, Renderable redBallPath) {
         if (!this.inTurboMode) {
             this.inTurboMode = true;
             this.setVelocity(this.getVelocity().mult(turboBallVelocityMultiplier));
@@ -89,7 +89,7 @@ public class Ball extends GameObject {
     private void resetBall() {
         this.inTurboMode = false;
         turboCollisions = 0;
-        setVelocity(getVelocity().mult(BrickerGameManager.FACTOR_OF_HALF));
+        setVelocity(getVelocity().mult(1/TurboCollisionStrategy.VELOCITY_MULTIPLICATION_FACTOR));
         renderer().setRenderable(renderable);
     }
 

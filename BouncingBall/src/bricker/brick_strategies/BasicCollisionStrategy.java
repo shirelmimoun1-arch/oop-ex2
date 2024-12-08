@@ -7,7 +7,7 @@ import danogl.GameObject;
  * This class implements the basic collision strategy for bricks in the game.
  */
 public class BasicCollisionStrategy implements CollisionStrategy {
-    private BrickerGameManager brickerGameManager;
+    public BrickerGameManager brickerGameManager;
 
     /**
      * Constructs a new BasicCollisionStrategy instance.

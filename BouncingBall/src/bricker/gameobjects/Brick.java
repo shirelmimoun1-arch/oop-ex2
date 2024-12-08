@@ -14,12 +14,6 @@ public class Brick extends GameObject {
     public static final float BRICK_HEIGHT = 15;
     public static final String BRICK_PICTURE_PATH = "assets/brick.png";
     public static final String BRICK_COLLISION_MESSAGE = "Collision with brick detected";
-//    public static final String BASIC_BRICK_NAME = "Brick Basic";
-//    public static final String EXTRA_BALL_BRICK_NAME = "Brick Extra Ball";
-//    public static final String EXTRA_PADDLE_BRICK_NAME = "Brick Extra Paddle";
-//    public static final String TURBO_BRICK_NAME = "Brick Turbo";
-//    public static final String EXTRA_LIFE_BRICK_NAME = "Brick Extra Life";
-//    public static final String DUBBLE_BRICK_NAME = "Brick Dubble Behavior";
     private CollisionStrategy collisionStrategy;
 
     /**

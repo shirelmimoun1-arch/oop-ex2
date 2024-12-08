@@ -1,9 +1,6 @@
 package bricker.brick_strategies;
 
-//import bricker.factories.PaddleFactory;
 import bricker.gameobjects.Paddle;
-import bricker.main.BrickerGameManager;
-import danogl.GameManager;
 import danogl.GameObject;
 import danogl.util.Vector2;
 
@@ -11,46 +8,39 @@ import danogl.util.Vector2;
  * Strategy of creating an extra paddle.
  */
 public class ExtraPaddleCollisionStrategy implements CollisionStrategy {
-    private  BrickerGameManager brickerGameManager;
-//    private  PaddleFactory paddleFactory;
+    private BasicCollisionStrategy basicCollisionStrategy;
 
 
     /**
      * constructor of the extra paddle collision strategy.
-     * @param brickerGameManager An instance of the BrickerGameManager class.
+     * @param basicCollisionStrategy The basic collision strategy.
      */
-    public ExtraPaddleCollisionStrategy(GameManager brickerGameManager) {
-        this.brickerGameManager = (BrickerGameManager) brickerGameManager;
-//        this.paddleFactory = new PaddleFactory(brickerGameManager);
+    public ExtraPaddleCollisionStrategy(BasicCollisionStrategy basicCollisionStrategy) {
+        this.basicCollisionStrategy = basicCollisionStrategy;
     }
 
     /**
-     * Handles the collision between a brick using this strategy and the ball.
+     * Handles the collision between a brick and the ball.
      * @param object1 brick GameObject.
      * @param object2 ball GameObject.
      */
     @Override
     public void onCollision(GameObject object1, GameObject object2) {
-        if (!brickerGameManager.doesExtraPaddleExist()) {
+        if (!basicCollisionStrategy.brickerGameManager.doesExtraPaddleExist()) {
             createExtraPaddle();
         }
-        brickerGameManager.removeGameObject(object1);
+        basicCollisionStrategy.onCollision(object1, object2);
     }
 
     private void createExtraPaddle() {
         Vector2 extraPaddlePosition = new Vector2(
-                brickerGameManager.windowDimensions.x() / 2,
-                brickerGameManager.windowDimensions.y() / 2);
-        brickerGameManager.createPaddle(Paddle.PADDLE_PICTURE_PATH,
+                basicCollisionStrategy.brickerGameManager.windowDimensions.x() / 2,
+                basicCollisionStrategy.brickerGameManager.windowDimensions.y() / 2);
+        basicCollisionStrategy.brickerGameManager.createPaddle(Paddle.PADDLE_PICTURE_PATH,
                 extraPaddlePosition,
                 Paddle.PADDLE_HEIGHT,
                 Paddle.PADDLE_WIDTH,
                 Paddle.EXTRA_PADDLE_NAME);
-//        paddleFactory.createPaddle(Paddle.PADDLE_PICTURE_PATH,
-//                extraPaddlePosition,
-//                Paddle.PADDLE_HEIGHT,
-//                Paddle.PADDLE_WIDTH,
-//                Paddle.EXTRA_PADDLE_NAME);
     }
 
 

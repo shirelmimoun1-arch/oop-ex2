@@ -1,7 +1,6 @@
 package bricker.brick_strategies;
 import danogl.GameObject;
 
-
 /**
  * Interface for collision strategies.
  */

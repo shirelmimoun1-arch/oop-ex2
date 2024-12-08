@@ -1,9 +1,6 @@
 package bricker.brick_strategies;
 
-//import bricker.factories.BallFactory;
 import bricker.gameobjects.Ball;
-import bricker.main.BrickerGameManager;
-import danogl.GameManager;
 import danogl.GameObject;
 import danogl.util.Vector2;
 
@@ -18,34 +15,31 @@ public class ExtraBallCollisionStrategy implements CollisionStrategy {
     public static final String PUCK_BALL_NAME = "Puck Ball";
     public static final float PUCK_BALL_SIZE_FACTOR = 0.75f;
     public static final int NUM_OF_PUCK_BALL_ADDED = 2;
-    private BrickerGameManager brickerGameManager;
+
+    private final BasicCollisionStrategy basicCollisionStrategy;
 
     /**
      * Construct a ExtraBallCollisionStrategy instance.
-     * @param brickerGameManager The game manager instance used to manage objects in the game.
+     * @param basicCollisionStrategy The basic collision strategy.
      */
-    public ExtraBallCollisionStrategy(GameManager brickerGameManager) {
-        this.brickerGameManager = (BrickerGameManager)brickerGameManager;
+    public ExtraBallCollisionStrategy(BasicCollisionStrategy basicCollisionStrategy) {
+        this.basicCollisionStrategy = basicCollisionStrategy;
     }
 
     /**
-     * Handles the collision between a brick using this strategy and the ball.
+     * Handles the collision between a brick and the ball.
      * @param object1 brick GameObject.
      * @param object2 ball GameObject.
      */
     @Override
     public void onCollision(GameObject object1, GameObject object2) {
-//        BallFactory ballFactory = new BallFactory(brickerGameManager);
         Vector2 puckBallPosition = object1.getCenter();
         for (int i = 0; i < NUM_OF_PUCK_BALL_ADDED; i++) {
-            brickerGameManager.createBall(puckBallPosition,
+            basicCollisionStrategy.brickerGameManager.createBall(puckBallPosition,
                     Ball.BALL_RADIUS * (PUCK_BALL_SIZE_FACTOR), createPuckBallVelocity(),
                     PUCK_BALL_PATH, Ball.CLASH_SOUND_PATH, PUCK_BALL_NAME);
-//            ballFactory.createBall(puckBallPosition,
-//                    Ball.BALL_RADIUS * (PUCK_BALL_SIZE_FACTOR), createPuckBallVelocity(),
-//                    PUCK_BALL_PATH, Ball.CLASH_SOUND_PATH, PUCK_BALL_NAME);
         }
-        brickerGameManager.removeGameObject(object1);
+        basicCollisionStrategy.onCollision(object1, object2);
     }
 
     private Vector2 createPuckBallVelocity(){

@@ -31,8 +31,6 @@ public class NumericHeart extends GameObject {
 
     }
 
-
-
     /**
      * Updates the numerical hearts color and text renderer when the player looses a life in the game.
      * @param numOfLives The number of lives remaining.

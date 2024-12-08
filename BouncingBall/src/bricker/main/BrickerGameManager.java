@@ -33,7 +33,6 @@ public class BrickerGameManager extends GameManager {
     public static final float FACTOR_OF_HALF = 0.5f;
     public static final int DEFAULT_NUM_OF_LIVES = 3;
     public static final int MAX_NUM_OF_HEARTS = 4;
-    public static final int TARGET_FRAME_RATE = 100;
     public static final String BORDER_NAME = "Border";
     public static final String WALLPAPER_PICTURE_PATH = "assets/DARK_BG2_small.jpeg";
 
@@ -54,13 +53,6 @@ public class BrickerGameManager extends GameManager {
     public Vector2 windowDimensions;
     public UserInputListener inputListener;
     private StrategyFactory brickStrategyFactory;
-//    private BallFactory ballFactory;
-//    private PaddleFactory paddleFactory;
-//    private WallOfBricksFactory wallOfBricks;
-//    private WallPaperFactory wallPaperFactory;
-//    private BordersFactory bordersFactory;
-//    private NumericHeartFactory numericHeartFactory;
-//    private GraphicHeartFactory graphicHeartFactory;
 
     /**
      * Constructs a new BrickerGameManager instance.
@@ -75,13 +67,6 @@ public class BrickerGameManager extends GameManager {
         this.numOfRows = numOfRow;
         this.numOfBricksInRow = numOfBricksInRow;
         this.bricksHitCounter = 0;
-//        this.ballFactory = new BallFactory(this);
-//        this.paddleFactory =  new PaddleFactory(this);
-//        this.wallOfBricks = new WallOfBricksFactory(this);
-//        this.wallPaperFactory = new WallPaperFactory(this);
-//        this.bordersFactory = new BordersFactory(this);
-//        this.numericHeartFactory = new NumericHeartFactory(this);
-//        this.graphicHeartFactory = new GraphicHeartFactory(this);
         this.brickStrategyFactory = new StrategyFactory(this);
         this.numOfHeartsRemain = DEFAULT_NUM_OF_LIVES;
     }
@@ -110,25 +95,18 @@ public class BrickerGameManager extends GameManager {
 
         // Creating wallpaper
         createWallPaper(imageReader, windowDimensions);
-//        wallPaperFactory.createWallPaper(imageReader, windowDimensions);
 
         // Creating borders
         createBorder(windowDimensions, BORDER_NAME);
-//        bordersFactory.createBorder(windowDimensions, BordersFactory.BORDER_NAME);
 
         // Creating WallOfBricks
         createWallOfBricks(windowDimensions, imageReader, numOfRows, numOfBricksInRow,
                 Brick.BRICK_PICTURE_PATH);
-//        wallOfBricks.createWallOfBricks(windowDimensions, imageReader, numOfRows, numOfBricksInRow,
-//                BRICK_PICTURE_PATH);
 
         // Creating ball
         createBall(windowDimensions.mult(FACTOR_OF_HALF), Ball.BALL_RADIUS,
                 createRandomVelocity(Ball.BALL_SPEED), Ball.BALL_PICTURE_PATH,
                 Ball.CLASH_SOUND_PATH, Ball.BALL_NAME);
-//        ballFactory.createBall(windowDimensions.mult(FACTOR_OF_HALF), Ball.BALL_RADIUS,
-//                createRandomVelocity(BALL_SPEED), Ball.BALL_PICTURE_PATH,
-//                Ball.CLASH_SOUND_PATH, Ball.BALL_NAME);
 
         // Creating user paddles
         Vector2 startingPlacePaddle = new Vector2(
@@ -136,8 +114,6 @@ public class BrickerGameManager extends GameManager {
                 windowDimensions.y()-Paddle.PADDLE_GAP_FROM_BUTTOM_WINDOW);
         createPaddle(Paddle.PADDLE_PICTURE_PATH,startingPlacePaddle,
                 Paddle.PADDLE_HEIGHT,Paddle.PADDLE_WIDTH,Paddle.PADDLE_NAME);
-//        paddleFactory.createPaddle(Paddle.PADDLE_PICTURE_PATH,startingPlacePaddle,
-//                Paddle.PADDLE_HEIGHT,Paddle.PADDLE_WIDTH,Paddle.PADDLE_NAME);
 
         // Creating GraphicHearts
         for (int i = 0; i < numOfHeartsRemain; i++) {
@@ -146,14 +122,10 @@ public class BrickerGameManager extends GameManager {
                     windowDimensions.y() - GraphicHeart.GRAPHIC_HEART_GAP_FROM_BUTTOM_WINDOW);
             createGraphicHearts(GraphicHeart.GRAPGIC_HEART_PICTURE_PATH, setPlace,
                     Layer.UI,GraphicHeart.GRAPHIC_HEART_STRING, Vector2.ZERO);
-//            graphicHeartFactory.createGraphicHearts(HEART_PICTURE_PATH, setPlace,
-//                    Layer.UI,GraphicHeart.GRAPHIC_HEART_STRING, Vector2.ZERO);
         }
 
         // Creating NumericalHearts
         createNumericalHearts(DEFAULT_NUM_OF_LIVES, NumericHeart.NUMERICAL_HEART_STRING);
-//        numericHeartFactory.createNumericalHearts(windowDimensions,DEFAULT_NUM_OF_LIVES,
-//        NumericalHeart.NUMERICAL_HEART_STRING);
     }
 
     private void createWallPaper(ImageReader imageReader, Vector2 windowDimensions){
@@ -218,20 +190,12 @@ public class BrickerGameManager extends GameManager {
         GameObject wallLeft = new GameObject(topLeftOfUpperAndLeftWall, RightAndLefWallDimensions,null);
         GameObject wallDown = new GameObject(topLeftOfDownWall, UpAndDownWallDimensions,null);
 
-        Vector2[] wallHeights = {new Vector2(windowDimensions.x()/2, 0),
-                new Vector2(windowDimensions.x(), windowDimensions.y()/2),
-                new Vector2(0,windowDimensions.y()/2),
-                new Vector2(windowDimensions.x()/2, windowDimensions.y())
-        };
-
         GameObject[] walls = {wallUp, wallRight, wallLeft, wallDown};
         for (int i = 0; i < 3; i++) {
-            walls[i].setCenter(wallHeights[i]);
             walls[i].setTag(borderName);
             addObjectsToTheList(walls[i], Layer.STATIC_OBJECTS);
         }
 
-        walls[3].setCenter(wallHeights[3]);
         walls[3].setTag(borderName);
         addObjectsToTheList(walls[3], Layer.BACKGROUND);
     }
@@ -372,20 +336,17 @@ public class BrickerGameManager extends GameManager {
         for (GameObject gameObject : gameObjects().objectsInLayer(Layer.UI)) {
             String curTag = gameObject.getTag();
             if (curTag.equals(GraphicHeart.GRAPHIC_HEART_STRING) && !graphicHeartFlag){
-                //remove the last heart from the list
                 if (gameObject.getCenter().x() == (numOfHeartsRemain+1)*GraphicHeart.HEART_SIZE) {
                     gameObjects().removeGameObject(gameObject, Layer.UI);
                     graphicHeartFlag = true;
                 }
             }
             if(curTag.equals(NumericHeart.NUMERICAL_HEART_STRING) && !numericalHeartFlag){
-//                System.out.println(true);
                 NumericHeart numericHeart = (NumericHeart) gameObject;
                 numericHeart.UpdateNumericalHeart(numOfHeartsRemain);
                 numericalHeartFlag = true;
             }
         }
-//        System.out.println(numOfHeartsRemain);
     }
 
     /**
@@ -394,13 +355,10 @@ public class BrickerGameManager extends GameManager {
     public void increaseLives() {
         if (numOfHeartsRemain < MAX_NUM_OF_HEARTS) {
             numOfHeartsRemain++;
-//            System.out.println(numOfHeartsRemain);
             Vector2 setPlace = (new Vector2(GraphicHeart.HEART_SIZE * (numOfHeartsRemain),
                     windowDimensions.y() - GraphicHeart.GRAPHIC_HEART_GAP_FROM_BUTTOM_WINDOW));
             createGraphicHearts(GraphicHeart.GRAPGIC_HEART_PICTURE_PATH, setPlace,
                     Layer.UI,GraphicHeart.GRAPHIC_HEART_STRING, Vector2.ZERO);
-//            graphicHeartFactory.createGraphicHearts(HEART_PICTURE_PATH, setPlace,
-//                    Layer.UI,GraphicHeart.GRAPHIC_HEART_STRING, Vector2.ZERO);
             for (GameObject gameObject : gameObjects().objectsInLayer(Layer.UI)) {
                 String curTag = gameObject.getTag();
                 if (curTag.equals(NumericHeart.NUMERICAL_HEART_STRING)) {
@@ -495,9 +453,10 @@ public class BrickerGameManager extends GameManager {
     }
 }
 
-//todo:
-// 1) Explain in Ball class : getTurboMode(), activeTurbo(), resetBall()
-// 2) ask if turbo mode doesnt break encapsulation
+//TODO LIST:
+// 1) Explain in Ball class : getTurboMode(), activeTurbo(), resetBall() V
+// 2) ask if turbo mode doesnt break encapsulation principle. is it good design to handle the turbo mode
+//    from the ball, and only calling the mode from the strategy?
 // 3) Explain in Paddle class : onCollisionEnter(), removeExtraPaddle(),
 // 4) explain the design chosen for the hearts
 // 5) should I, and how to create an object game factory
@@ -508,7 +467,8 @@ public class BrickerGameManager extends GameManager {
 //        this.windowDimensions = windowController.getWindowDimensions();
 //        this.windowController = windowController;
 //        this.inputListener = inputListener;
-// 8) is it good design to handle the turbo mode from the ball, and only calling the mode from the strategy?
-// 9) and which class do the constants belong to?
-// 10) Double strategy implementation.
+// 8) to which class do the constants belong?
+// 9) Double strategy implementation.
+// 10) the exxtraPaddleCollisionStrategy - we cannot manage the extraPaddle from the strategy because
+// it deiapires! so we must handle the strategy from the paddle class only.
 

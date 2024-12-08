@@ -1,6 +1,5 @@
 package bricker.gameobjects;
 
-import bricker.brick_strategies.ExtraPaddleCollisionStrategy;
 import bricker.main.BrickerGameManager;
 import danogl.GameObject;
 import danogl.collisions.Collision;

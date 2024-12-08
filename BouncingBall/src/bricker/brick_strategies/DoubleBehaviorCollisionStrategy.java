@@ -1,83 +1,76 @@
 package bricker.brick_strategies;
 
 import bricker.factories.StrategyFactory;
-import bricker.main.BrickerGameManager;
-import danogl.GameManager;
 import danogl.GameObject;
+import bricker.main.BrickerGameManager;
 
 import java.util.Random;
 
-/**
- * Strategy of double behavior of the brick.
- */
 public class DoubleBehaviorCollisionStrategy implements CollisionStrategy {
-    public static final int NUM_OF_STRATEGIES_TO_ACTIVE = 2;
-    private BrickerGameManager brickerGameManager;
-    private StrategyFactory randStrategy;
-    private DoubleBehaviorCollisionStrategy dubbleBehaviorCollisionStrategy;
-    private ExtraBallCollisionStrategy extraBallCollisionStrategy;
-    private ExtraLifeCollisionStrategy extraLifeCollisionStrategy;
-    private ExtraPaddleCollisionStrategy extraPaddleCollisionStrategy;
-    private TurboCollisionStrategy turboCollisionStrategy;
-
-    private Random random;
+    private CollisionStrategy strategy1;
+    private CollisionStrategy strategy2;
+    private BasicCollisionStrategy basicCollisionStrategy;
+    private StrategyFactory strategyFactory;
+    private boolean prevWasDouble;
+    private Random rand = new Random();
 
     /**
-     * Constructor of DubbleBehaviorCollisionStrategy.
-     * @param brickerGameManager A BrickerGameManager instance.
+     * Constructor for DoubleBehaviorCollisionStrategy.
+     * This will create two strategies recursively and limit the depth.
+     *
+     * @param basicCollisionStrategy The basic collision strategy.
      */
-    public DoubleBehaviorCollisionStrategy(GameManager brickerGameManager){
-        this.brickerGameManager = (BrickerGameManager)brickerGameManager;
-        this.random = new Random();
-        this.randStrategy = new StrategyFactory((BrickerGameManager)brickerGameManager);
+    public DoubleBehaviorCollisionStrategy(BasicCollisionStrategy basicCollisionStrategy) {
+        this.basicCollisionStrategy = basicCollisionStrategy;
+        this.strategyFactory = new StrategyFactory(basicCollisionStrategy.brickerGameManager);
+        this.strategy1 = createStrategy(basicCollisionStrategy.brickerGameManager);
+        this.strategy2 = createStrategy(basicCollisionStrategy.brickerGameManager);
     }
 
     /**
-     * Handles the collision between a brick using this strategy and the ball.
+     * Constructor for DoubleBehaviorCollisionStrategy.
+     * @param strategy1 The first strategy to wrap.
+     * @param strategy2 The second strategy to wrap.
+     */
+    public DoubleBehaviorCollisionStrategy(CollisionStrategy strategy1, CollisionStrategy strategy2,
+                                           BrickerGameManager brickerGameManager) {
+        this.strategyFactory = new StrategyFactory(brickerGameManager);
+        this.strategy1 = strategy1;
+        this.strategy2 = strategy2;
+        this.prevWasDouble = false;
+    }
+
+    /**
+     * Handles the collision between a brick and the ball.
      * @param object1 brick GameObject.
      * @param object2 ball GameObject.
      */
     @Override
     public void onCollision(GameObject object1, GameObject object2) {
-        boolean activeDubbleBehaviorFlag1 = false;
-        boolean activeDubbleBehaviorFlag2 = false;
-        int randomInt1 = random.nextInt(5);
-        if (randomInt1 == 4) {
-            activeDubbleBehaviorFlag1 = true;
-        }
-        CollisionStrategy chosenStrategy1 = randStrategy.createStrategy(randomInt1);
-        CollisionStrategy chosenStrategy2 = null;
-        int randomInt2;
-        // if chosenStrategy1 is dubble behavior
-        if (activeDubbleBehaviorFlag1){
-            randomInt2 = random.nextInt(4);
-            chosenStrategy2 = randStrategy.createStrategy(randomInt2);
-        }
-        else {
-            randomInt2 = random.nextInt(5);
-            if(randomInt2 == 4){
-                activeDubbleBehaviorFlag2 = true;
-            }
-            chosenStrategy2 = randStrategy.createStrategy(randomInt2);
-        }
-        if (activeDubbleBehaviorFlag1 || activeDubbleBehaviorFlag2){
-            int randomInt3 = random.nextInt(4);
-            CollisionStrategy chosenStrategy3 = randStrategy.createStrategy(randomInt3);
-            int randomInt4 = random.nextInt(4);
-            CollisionStrategy chosenStrategy4 = randStrategy.createStrategy(randomInt4);
-            chosenStrategy3.onCollision(object1, object2);
-            chosenStrategy4.onCollision(object1, object2);
-            if (activeDubbleBehaviorFlag1){
-                chosenStrategy2.onCollision(object1, object2);
-            }
-            else {
-                chosenStrategy1.onCollision(object1, object2);
-            }
-        }
-        else{
-            chosenStrategy1.onCollision(object1, object2);
-            chosenStrategy2.onCollision(object1, object2);
-        }
+        strategy1.onCollision(object1, object2);
+        strategy2.onCollision(object1, object2);
     }
 
+    /**
+     * Creates a strategy recursively with a limit on the number of behaviors.
+     *
+     * @param brickerGameManager The Bricker game manager instance.
+     * @return A CollisionStrategy based on the random selection and depth.
+     */
+    private CollisionStrategy createStrategy(BrickerGameManager brickerGameManager) {
+        if (prevWasDouble) {
+            return strategyFactory.createSingleStrategy(basicCollisionStrategy);
+        }
+
+        int randomValue = rand.nextInt(5);
+
+        if (randomValue == 4) { // If double behavior is chosen
+            prevWasDouble = true;
+            CollisionStrategy strategy1 = createStrategy(brickerGameManager);
+            CollisionStrategy strategy2 = createStrategy(brickerGameManager);
+            return new DoubleBehaviorCollisionStrategy(strategy1, strategy2, brickerGameManager);
+        }
+
+        return strategyFactory.createSingleStrategy(basicCollisionStrategy);
+    }
 }
