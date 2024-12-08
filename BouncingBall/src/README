@@ -97,42 +97,70 @@ Additionally, we added a constant for the velocity of the falling heart (FALLING
 The logic for setting this velocity is encapsulated in this strategy because it is solely the responsibility
 of the ExtraLifeCollisionStrategy to determine the behavior and properties of the falling heart.
 
-4. The DoubleCollisionStrategy implementation:
-    This class contains two instances of the CollisionStrategy interface.
-    We made
-    that are being choose im the
-    createStrategy method.
+4. We implemented the DoubleBehaviorCollisionStrategy that combines two collision strategies,
+   allowing a collision strategy to trigger multiple behaviors simultaneously.
+   This was done by creating a recursive method in the DoubleBehaviorCollisionStrategy class that
+   randomly selects and wraps different collision strategies.
+
+   Key Design Elements:
+   Strategy Factory: The StrategyFactory class provides the creation of various collision strategies.
+   Double Wrapping: In DoubleBehaviorCollisionStrategy, we execute the onCollision methods of the
+   two strategies simultaneously.
+   Random Selection: A recursive method in createStrategy randomly determines whether to combine behaviors
+   (the prevWasDouble flag) or return a single basic behavior.
+   Limiting to 3 Behaviors:
+   Depth Control: The prevWasDouble boolean ensures that only one recursive level of
+   double wrapping is allowed.
+   This prevents excessive depth and recursion by stopping the combination after reaching the
+   specified depth limit, ensuring no more than three strategies are combined.
 
 
-5. BasicCollisionStrategy API:
-    We made the brickerGameManager a public field, so that every strategy that gets the
-    basicCollisionStrategy instance could use it. Instead of sending it to every strategy.
-    The brickerGameManager is neccesary for the following strategies:
-    ExtraBallCollisionStrategy to create the puck balls,
-    ExtraLifeCollisionStrategy to create the graphic heart,
-    TurboCollisionStrategy to make the renderable of the turbo ball,
-    ExtraPaddleCollisionStrategy to make the extra paddle.
+5.
+BasicCollisionStrategy API:
+We made the brickerGameManager a protected field, so that every strategy that gets the
+basicCollisionStrategy instance could use it. Instead of sending it as a parameter to every strategy,
+when not all of them are using its functionality.
+The brickerGameManager is necessary for the following strategies:
+ExtraBallCollisionStrategy to create the puck balls,
+ExtraLifeCollisionStrategy to create the graphic heart,
+TurboCollisionStrategy to make the renderable of the turbo ball,
+ExtraPaddleCollisionStrategy to make the extra paddle.
 
-   Ball API:
-    We added three public methods to manage the ball's turbo mode when activated. These methods ensure that
-    the ball itself handles its own attributes, adhering to the encapsulation principle by keeping the
-    responsibility for modifying the ball's attributes within the ball class.
+Ball API:
+We added three public methods to manage the ball's turbo mode when activated. These methods ensure that
+the ball itself handles its own attributes, adhering to the encapsulation principle by keeping the
+responsibility for modifying the ball's attributes within the ball class.
 
-       1) activateTurbo Method:
-            This method activates turbo mode and updates the ball's attributes accordingly.
+   1) activateTurbo Method:
+        This method activates turbo mode and updates the ball's attributes accordingly.
 
-       2) getTurboMode Method:
-            This is a getter for the turboMode field, indicating whether turbo mode is currently active.
-            It allows the TurboCollisionStrategy to check the turbo mode status without directly accessing
-            the ball's internal implementation.
+   2) getTurboMode Method:
+        This is a getter for the turboMode field, indicating whether turbo mode is currently active.
+        It allows the TurboCollisionStrategy to check the turbo mode status without directly accessing
+        the ball's internal implementation.
 
-       3) resetBall Method:
-            This method resets the ball to its original attributes and deactivates turbo mode by resetting
-            the turboMode field. It ensures that the TurboCollisionStrategy can reactivate turbo mode
-            when needed.
+   3) resetBall Method:
+        This method resets the ball to its original attributes and deactivates turbo mode by resetting
+        the turboMode field. It ensures that the TurboCollisionStrategy can reactivate turbo mode
+        when needed.
 
-    By handling turbo mode logic entirely within the ball class, we minimize the coupling between the
-    TurboCollisionStrategy and the ball class, ensuring clean separation of concerns and better
-    maintainability.
+By handling turbo mode logic entirely within the ball class, we minimize the coupling between the
+TurboCollisionStrategy and the ball class, ensuring clean separation of concerns and better
+maintainability.
 
-Paddel API:
+Paddle API:
+
+We added two overridden methods to manage the Extra Paddle mode when activated.
+These methods ensure that the Paddle class itself handles its attributes, adhering to the encapsulation
+principle by keeping the responsibility for modifying the Paddle's attributes within the Paddle class.
+
+    1) onCollisionEnter Method:
+        This method handles the extra paddle attribute, ensuring it is removed after the paddle is hit 4 times.
+        The Paddle class is responsible for counting these hits, maintaining the encapsulation principle.
+
+    2) update Method:
+        This method updates the behavior of the paddle during each frame.
+
+By handling the Extra Paddle mode logic entirely within the Paddle class, we minimize coupling
+between the ExtraPaddleCollisionStrategy and the Paddle class. This ensures a clean separation of
+concerns and improves maintainability.
