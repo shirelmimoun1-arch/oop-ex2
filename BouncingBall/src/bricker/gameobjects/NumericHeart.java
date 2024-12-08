@@ -7,13 +7,37 @@ import danogl.util.Vector2;
 import java.awt.*;
 
 /**
- * This class is responsible for the NumericalHeart game object.
+ * The NumericHeart class represents a visual indicator of the player's remaining lives in the Bricker game.
  */
 public class NumericHeart extends GameObject {
-    public static final String NUMERICAL_HEART_STRING = "Numerical Heart";
+    /**
+     * The name assigned to the Numeric Heart for identification purposes.
+     */
+    public static final String NUMERICAL_HEART_NAME = "Numerical Heart";
+
+    /**
+     * The format used to display the text for the number of lives.
+     */
     public static final String NUMERICAL_HEART_TEXT_FORMAT = "Lives: ";
+
+    /**
+     * The initial color of the text when the game starts (green for full lives).
+     */
     public static final Color INITIAL_COLOR = Color.GREEN;
-    public static final int GAP_FROM_BUTTOM_WINDOW = 80;
+
+    /**
+     * The vertical gap (in pixels) from the bottom of the window to the numerical heart.
+     */
+    public static final int NUMERIC_HEART_GAP_FROM_BOTTOM_WINDOW = 80;
+
+    /**
+     * Constants representing the number of lives remaining in the game.
+     * These constants are used to manage and display the player's lives.
+     */
+    public static final int ONE_LIFE_REMAIN = 1;
+    public static final int TWO_LIFE_REMAIN = 2;
+    public static final int THREE_LIFE_REMAIN = 3;
+
     private final TextRenderable renderable;
 
     /**
@@ -32,7 +56,7 @@ public class NumericHeart extends GameObject {
     }
 
     /**
-     * Updates the numerical hearts color and text renderer when the player looses a life in the game.
+     * Updates the display of the NumericalHeart when the player loses a life.
      * @param numOfLives The number of lives remaining.
      */
     public void UpdateNumericalHeart(int numOfLives){
@@ -47,13 +71,13 @@ public class NumericHeart extends GameObject {
 
     private void setNumericalHeartColor(int numOfLives){
         switch (numOfLives){
-            case 1:
+            case ONE_LIFE_REMAIN:
                 renderable.setColor(Color.red);
                 break;
-            case 2:
+            case TWO_LIFE_REMAIN:
                 renderable.setColor(Color.yellow);
                 break;
-            case 3:
+            case THREE_LIFE_REMAIN:
                 renderable.setColor(Color.green);
                 break;
         }

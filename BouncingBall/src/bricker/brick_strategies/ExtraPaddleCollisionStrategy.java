@@ -5,24 +5,28 @@ import danogl.GameObject;
 import danogl.util.Vector2;
 
 /**
- * Strategy of creating an extra paddle.
+ * A collision strategy that introduces an additional paddle into the game
+ * when the associated brick is hit by the ball. This strategy checks if an
+ * extra paddle already exists and only creates one if it does not.
  */
 public class ExtraPaddleCollisionStrategy implements CollisionStrategy {
     private BasicCollisionStrategy basicCollisionStrategy;
 
-
     /**
-     * constructor of the extra paddle collision strategy.
-     * @param basicCollisionStrategy The basic collision strategy.
+     * Constructor of the extra paddle collision strategy.
+     * @param basicCollisionStrategy The base collision strategy to extend with this behavior.
      */
     public ExtraPaddleCollisionStrategy(BasicCollisionStrategy basicCollisionStrategy) {
         this.basicCollisionStrategy = basicCollisionStrategy;
     }
 
     /**
-     * Handles the collision between a brick and the ball.
-     * @param object1 brick GameObject.
-     * @param object2 ball GameObject.
+     * Handles the collision event between a brick and the ball.
+     * If an extra paddle does not already exist, a new paddle is created.
+     * Additionally, delegates any further collision behavior to the base collision strategy.
+     *
+     * @param object1 The brick GameObject involved in the collision.
+     * @param object2 The ball GameObject involved in the collision.
      */
     @Override
     public void onCollision(GameObject object1, GameObject object2) {

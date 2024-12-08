@@ -7,13 +7,29 @@ import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
 /**
- * This class is responsible for the Brick game object.
+ * The Brick class represents a brick object in the Bricker game.
  */
 public class Brick extends GameObject {
+    /**
+     * The name assigned to the brick for identification purposes.
+     */
     public static final String BRICK_NAME = "Brick";
+
+    /**
+     * The default height of the brick (in pixels).
+     */
     public static final float BRICK_HEIGHT = 15;
+
+    /**
+     * Path to the image used for rendering the brick.
+     */
     public static final String BRICK_PICTURE_PATH = "assets/brick.png";
+
+    /**
+     * A message used to notify when a collision with a brick is detected.
+     */
     public static final String BRICK_COLLISION_MESSAGE = "Collision with brick detected";
+
     private CollisionStrategy collisionStrategy;
 
     /**
@@ -32,7 +48,8 @@ public class Brick extends GameObject {
     }
 
     /**
-     * Defines the behavior of the brick when it collides with another game object.
+     * Handles the behavior of the brick when it collides with another game object.
+     * The method delegates the collision handling to the assigned collisionStrategy.
      * @param other The GameObject with which a collision occurred.
      * @param collision Information regarding this collision.
      *                  A reasonable elastic behavior can be achieved with:

@@ -7,31 +7,57 @@ import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
 /**
- * This class is responsible for the GraphicHeart game object.
+ * The GraphicHeart class represents a graphic heart object in the Bricker game.
  */
 public class GraphicHeart extends GameObject {
-    public static final String GRAPHIC_HEART_STRING = "Graphic Heart";
-    public static final String FALLING_HEART_STRING = "fallingHeart";
-    public static final String GRAPGIC_HEART_PICTURE_PATH = "assets/heart.png";
+    /**
+     * The name assigned to the Graphic Heart for identification purposes.
+     */
+    public static final String GRAPHIC_HEART_NAME = "Graphic Heart";
+
+    /**
+     * The name assigned to the Graphic Heart when its falling for identification purposes.
+     */
+    public static final String FALLING_HEART_NAME = "fallingHeart";
+
+    /**
+     * Path to the image used for rendering the heart.
+     */
+    public static final String GRAPHIC_HEART_PICTURE_PATH = "assets/heart.png";
+
+    /**
+     * The size of the heart (in pixels).
+     */
     public static final int HEART_SIZE = 30;
-    public static final int GRAPHIC_HEART_GAP_FROM_BUTTOM_WINDOW = 20;
+
+    /**
+     * The vertical gap (in pixels) from the bottom of the window to the heart.
+     */
+    public static final int GRAPHIC_HEART_GAP_FROM_BOTTOM_WINDOW = 20;
+
     private BrickerGameManager brickerGameManager;
 
 
     /**
      * Constructor for the GraphicHeart class.
-     * @param topLeftCorner The top left corner of the GraphicHeart.
-     * @param dimensions The dimensions of the GraphicHeart.
-     * @param renderable The renderable object for the GraphicHeart.
-     * @param brickerGameManager The BrickerGameManager instance.
+     * @param topLeftCorner The position of the heart's top-left corner in window coordinates (pixels).
+     *                      The top-left corner of the window is (0, 0).
+     * @param dimensions The width and height of the heart (in pixels).
+     * @param renderable The renderable (image) used to display the heart.
+     * @param brickerGameManager The instance of the BrickerGameManager that will manage the game state,
+     *                           including lives.
      */
-    public GraphicHeart(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable, BrickerGameManager brickerGameManager) {
+    public GraphicHeart(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable,
+                        BrickerGameManager brickerGameManager) {
         super(topLeftCorner, dimensions, renderable);
         this.brickerGameManager = brickerGameManager;
     }
 
     /**
-     * Handles the collision event between the GraphicHeart and  the Paddle.
+     * Handles the collision event between the GraphicHeart and another game object,
+     * specifically the paddle.
+     * When the heart collides with the paddle, the player's lives are increased and the heart
+     * is removed from the game.
      * @param other The other GameObject involved in the collision.
      * @param collision The Collision object representing the collision details.
      */

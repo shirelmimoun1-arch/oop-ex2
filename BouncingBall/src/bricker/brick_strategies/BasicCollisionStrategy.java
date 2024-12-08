@@ -5,9 +5,13 @@ import danogl.GameObject;
 
 /**
  * This class implements the basic collision strategy for bricks in the game.
+ * In this strategy the bricks simply disappears from the game.
  */
 public class BasicCollisionStrategy implements CollisionStrategy {
-    public BrickerGameManager brickerGameManager;
+    /**
+     * The bricker game manager instance. Used by the strategies containing the basic strategy.
+     */
+    protected BrickerGameManager brickerGameManager;
 
     /**
      * Constructs a new BasicCollisionStrategy instance.
@@ -18,9 +22,9 @@ public class BasicCollisionStrategy implements CollisionStrategy {
     }
 
     /**
-     * Handles the collision between a brick using this strategy and the ball.
-     * @param object1 brick GameObject.
-     * @param object2 ball GameObject.
+     * Handles the collision between a brick and the ball.
+     * @param object1 The brick GameObject.
+     * @param object2 The ball GameObject.
      */
     @Override
     public void onCollision(GameObject object1, GameObject object2) {
