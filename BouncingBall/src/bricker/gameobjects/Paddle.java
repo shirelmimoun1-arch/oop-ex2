@@ -95,12 +95,17 @@ public class Paddle extends GameObject {
         }
     }
 
+    /**
+     * Determines whether the paddle should collide with the given GameObject.
+     * The paddle should collide with balls and puck balls, but not with other objects.
+     * @param other The other GameObject.
+     * @return
+     */
     @Override
     public boolean shouldCollideWith(GameObject other) {
         return other.getTag().equals(Ball.BALL_NAME) || other.getTag().
                 equals(ExtraBallCollisionStrategy.PUCK_BALL_NAME) ;
     }
-
 
 
     private void removeExtraPaddle() {

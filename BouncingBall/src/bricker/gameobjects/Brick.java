@@ -25,11 +25,6 @@ public class Brick extends GameObject {
      */
     public static final String BRICK_PICTURE_PATH = "assets/brick.png";
 
-    /**
-     * A message used to notify when a collision with a brick is detected.
-     */
-    public static final String BRICK_COLLISION_MESSAGE = "Collision with brick detected";
-
     private CollisionStrategy collisionStrategy;
 
     /**
