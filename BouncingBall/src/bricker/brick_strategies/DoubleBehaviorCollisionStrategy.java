@@ -20,17 +20,19 @@ public class DoubleBehaviorCollisionStrategy implements CollisionStrategy {
     private BasicCollisionStrategy basicCollisionStrategy;
     private StrategyFactory strategyFactory;
     private boolean prevWasDouble;
-    private Random rand = new Random();
+    private Random rand;
 
     /**
      * Constructor for DoubleBehaviorCollisionStrategy.
      * @param basicCollisionStrategy The base collision strategy to extend with this behavior.
      */
     public DoubleBehaviorCollisionStrategy(BasicCollisionStrategy basicCollisionStrategy) {
+        this.rand = new Random();
         this.basicCollisionStrategy = basicCollisionStrategy;
         this.strategyFactory = new StrategyFactory(basicCollisionStrategy.brickerGameManager);
         this.strategy1 = createStrategy();
         this.strategy2 = createStrategy();
+
     }
 
     /**
@@ -41,7 +43,6 @@ public class DoubleBehaviorCollisionStrategy implements CollisionStrategy {
     public DoubleBehaviorCollisionStrategy(CollisionStrategy strategy1, CollisionStrategy strategy2) {
         this.strategy1 = strategy1;
         this.strategy2 = strategy2;
-        this.prevWasDouble = false;
     }
 
     /**
@@ -55,6 +56,8 @@ public class DoubleBehaviorCollisionStrategy implements CollisionStrategy {
         strategy2.onCollision(object1, object2);
     }
 
+
+
     /**
      * Creates a new collision strategy. Ensures that two nested `DoubleBehaviorCollisionStrategy`
      * instances are not created consecutively. Thereby limiting the maximum depth of composite
@@ -64,7 +67,9 @@ public class DoubleBehaviorCollisionStrategy implements CollisionStrategy {
      */
     public CollisionStrategy createStrategy() {
         if (prevWasDouble) {
-            return strategyFactory.createSingleBehavior(basicCollisionStrategy);
+            int randomValue = rand.nextInt(StrategyFactory.NUM_OF_SPECIAL_STRATEGY - 1);
+            return strategyFactory.createSingleBehavior(basicCollisionStrategy,
+                    randomValue);
         }
 
         int randomValue = rand.nextInt(StrategyFactory.NUM_OF_SPECIAL_STRATEGY);
@@ -76,6 +81,6 @@ public class DoubleBehaviorCollisionStrategy implements CollisionStrategy {
             return new DoubleBehaviorCollisionStrategy(strategy1, strategy2);
         }
 
-        return strategyFactory.createSingleBehavior(basicCollisionStrategy);
+        return strategyFactory.createSingleBehavior(basicCollisionStrategy, randomValue);
     }
 }

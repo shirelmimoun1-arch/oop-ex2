@@ -54,10 +54,10 @@ public class StrategyFactory {
 
     /**
      * Creates a single behavior strategy from the available special strategies.
-     * @return A random single `CollisionStrategy` instance, excluding composite strategies.
+     * @return The `CollisionStrategy` instance, chosen from the list excluding composite strategies.
      */
-    public CollisionStrategy createSingleBehavior(BasicCollisionStrategy basicCollisionStrategy) {
-        int randomValue = rand.nextInt(NUM_OF_SPECIAL_STRATEGY - 1);
+    public CollisionStrategy createSingleBehavior(BasicCollisionStrategy basicCollisionStrategy,
+                                                  int randomValue) {
         return switch (randomValue) {
             case 0 -> new ExtraBallCollisionStrategy(basicCollisionStrategy);
             case 1 -> new ExtraPaddleCollisionStrategy(basicCollisionStrategy);

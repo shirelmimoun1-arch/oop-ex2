@@ -43,7 +43,7 @@ public class Ball extends GameObject {
     private Renderable renderable;
     private Sound collisionSound;
     private int collisionCounter;
-    private int turboCollisions;
+//    private int turboCollisions;
 
     /**
      * Constructor for the Ball.
@@ -60,7 +60,6 @@ public class Ball extends GameObject {
         this.collisionSound = collisionSound;
         this.collisionCounter = 0;
         this.inTurboMode = false;
-        this.turboCollisions = 0;
     }
 
     /**
@@ -83,10 +82,10 @@ public class Ball extends GameObject {
         Vector2 newVelocity = getVelocity().flipped(collision.getNormal()); // the ball collision with paddle
         setVelocity(newVelocity);
         collisionSound.play();
-        this.collisionCounter++;
         if (this.getTurboMode()){
-            this.turboCollisions++;
-            if (this.turboCollisions > TurboCollisionStrategy.MAX_NUM_OF_BALL_COLLISIONS_IN_TURBO_MODE) {
+            System.out.println(getCollisionCounter());
+            setCollisionCounter(getCollisionCounter() + 1);
+            if (getCollisionCounter() > TurboCollisionStrategy.MAX_NUM_OF_BALL_COLLISIONS_IN_TURBO_MODE) {
                 resetBall();
             }
         }
@@ -116,7 +115,7 @@ public class Ball extends GameObject {
 
     private void resetBall() {
         this.inTurboMode = false;
-        turboCollisions = 0;
+        setCollisionCounter(0);
         setVelocity(getVelocity().mult(1/TurboCollisionStrategy.TURBO_MODE_VELOCITY_MULTIPLICATION_FACTOR));
         renderer().setRenderable(renderable);
     }
@@ -126,7 +125,12 @@ public class Ball extends GameObject {
      * @return The number of collisions of the ball.
      */
     public int getCollisionCounter() {
+
         return this.collisionCounter;
+    }
+
+    private void setCollisionCounter(int collisionCounter) {
+        this.collisionCounter = collisionCounter;
     }
 
 }
