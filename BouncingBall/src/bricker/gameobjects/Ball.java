@@ -17,6 +17,8 @@ public class Ball extends GameObject {
 
     /**
      * Path to the sound used when the ball collides with other objects in the game.
+     * The sound is from  the following link:
+     * <a href="https://soundbible.com/2067-Blop.html">...</a>
      */
     public static final String CLASH_SOUND_PATH = "assets/blop.wav";
 
@@ -76,14 +78,13 @@ public class Ball extends GameObject {
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
-        if (other.getTag().equals(GraphicHeart.GRAPHIC_HEART_NAME)) {
-            return;
-        }
+//        if (other.getTag().equals(GraphicHeart.GRAPHIC_HEART_NAME)) {
+//            return;
+//        }
         Vector2 newVelocity = getVelocity().flipped(collision.getNormal()); // the ball collision with paddle
         setVelocity(newVelocity);
         collisionSound.play();
         if (this.getTurboMode()){
-            System.out.println(getCollisionCounter());
             setCollisionCounter(getCollisionCounter() + 1);
             if (getCollisionCounter() > TurboCollisionStrategy.MAX_NUM_OF_BALL_COLLISIONS_IN_TURBO_MODE) {
                 resetBall();

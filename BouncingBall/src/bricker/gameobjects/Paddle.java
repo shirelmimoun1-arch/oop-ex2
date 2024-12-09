@@ -83,9 +83,10 @@ public class Paddle extends GameObject {
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
-        if ((other.getTag().equals(Ball.BALL_NAME)||other.getTag().
-                equals(ExtraBallCollisionStrategy.PUCK_BALL_NAME))
-                && this.getTag().equals(EXTRA_PADDLE_NAME)){
+//        if ((other.getTag().equals(Ball.BALL_NAME)||other.getTag().
+//                equals(ExtraBallCollisionStrategy.PUCK_BALL_NAME))
+//                && this.getTag().equals(EXTRA_PADDLE_NAME)){
+        if(this.getTag().equals(EXTRA_PADDLE_NAME)){
             extraPaddleNumOfHit++;
             if (extraPaddleNumOfHit >= MAX_NUM_OF_HIT) {
                 extraPaddleNumOfHit = 0;
@@ -93,6 +94,14 @@ public class Paddle extends GameObject {
             }
         }
     }
+
+    @Override
+    public boolean shouldCollideWith(GameObject other) {
+        return other.getTag().equals(Ball.BALL_NAME) || other.getTag().
+                equals(ExtraBallCollisionStrategy.PUCK_BALL_NAME) ;
+    }
+
+
 
     private void removeExtraPaddle() {
 

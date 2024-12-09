@@ -348,7 +348,6 @@ public class BrickerGameManager extends GameManager {
     public void removeGameObject(GameObject gameObject) {
         if (gameObject != null) {
             if(gameObject.getTag().startsWith(Brick.BRICK_NAME)) {
-                System.out.println(Brick.BRICK_COLLISION_MESSAGE);
                 boolean disappearFlag = gameObjects().removeGameObject(gameObject, Layer.STATIC_OBJECTS);
                 if (disappearFlag) {
                     increaseBricksHitCounter();
@@ -508,19 +507,3 @@ public class BrickerGameManager extends GameManager {
         window.run();
     }
 }
-
-//TODO LIST:
-// 1) magic numbers for the strategy lottery numbers and the case of the colors in the numeric heart
-// 2) where do all the constants of the strategies : turboo ball extra paddle, puck balls belongs?
-// 3) Explain in Paddle class : onCollisionEnter(), removeExtraPaddle(),
-// 4) explain the design chosen for the hearts V
-// 5) should I, and how to create an object game factory
-// 6) ask about the factories for each game object - is that necessary?
-// 7) is it bad practice?
-//        this.imageReader = imageReader;
-//        this.soundReader = soundReader;
-//        this.windowDimensions = windowController.getWindowDimensions();
-//        this.windowController = windowController;
-//        this.inputListener = inputListener;
-// 9) Double strategy implementation.
-

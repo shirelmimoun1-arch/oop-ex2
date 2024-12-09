@@ -1,7 +1,7 @@
 shirlel25,talia3
 325000057,211449483
 
-1. BasicCollisionStrategy Receiving GameObjectCollection
+1. BasicCollisionStrategy Receiving GameObjectCollection:
 We believe the best approach to managing the list of game objects is Option 2: delegating the responsibility
 of adding or deleting objects to the GameObjectCollection class exclusively. This ensures that the
 encapsulation principle is adhered to in the best way possible.
@@ -109,7 +109,7 @@ of the ExtraLifeCollisionStrategy to determine the behavior and properties of th
    Random Selection: A recursive method in createStrategy randomly determines whether to combine behaviors
    (the prevWasDouble flag) or return a single basic behavior.
    Limiting to 3 Behaviors:
-   Depth Control: The prevWasDouble boolean ensures that only one recursive level of
+   Depth Control: The prevWasDouble boolean Flag ensures that only one recursive level of
    double wrapping is allowed.
    This prevents excessive depth and recursion by stopping the combination after reaching the
    specified depth limit, ensuring no more than three strategies are combined.
